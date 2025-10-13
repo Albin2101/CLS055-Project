@@ -1,4 +1,4 @@
-import 'package:dawnfighter/home_screen.dart';
+import 'package:dawnfighter/views/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
