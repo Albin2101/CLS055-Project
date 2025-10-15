@@ -11,7 +11,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('Hello User')));
+    return Scaffold(
+      body: Center(child: Text('Hello User')),
+      floatingActionButton: ARviewButton(context),
+    );
   }
 }
 
