@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "560268551457",
-    "project_id": "cls055-dawnfighter",
-    "storage_bucket": "cls055-dawnfighter.firebasestorage.app"
+    "project_number": "362654540027",
+    "project_id": "cls055-dawnfighter-2",
+    "storage_bucket": "cls055-dawnfighter-2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:560268551457:android:dde6b4b5d0df46e5224a60",
+        "mobilesdk_app_id": "1:362654540027:android:77c05d679143931c05905e",
         "android_client_info": {
           "package_name": "com.example.dawnfighter"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAZSuBoiUE3WJZyf0bLt7kO_36k5i_MCkM"
+          "current_key": "AIzaSyCIY9YpU1gqtjCaZmsRRDlWIpJc6K7Wf3s"
         }
       ],
       "services": {

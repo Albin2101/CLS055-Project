@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase generated options (keep out of VCS)
+/lib/firebase_options.dart
+# Optional: ignore platform-specific config files if you don't want them in repo
+#/android/app/google-services.json
+#/ios/Runner/GoogleService-Info.plist
