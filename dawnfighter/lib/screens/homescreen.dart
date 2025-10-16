@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/alarmCard.dart';
+import 'social.dart';
+import 'alarms.dart';
+import 'user.dart';
+import '../widgets/navigationBar.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -9,60 +12,38 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  bool switch1 = false;
-  bool switch2 = false;
+  int selectedIndex = 1;
+
+  final List<Widget> pages = [const Social(), const Alarms(), const User()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/background.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    'MY ALARMS',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  AlarmCard(
-                    imagePath: 'assets/images/alarmCard.png',
-                    title: 'Card One',
-                    value: switch1,
-                    onChanged: (val) => setState(() => switch1 = val),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  AlarmCard(
-                    imagePath: 'assets/images/alarmCard.png',
-                    title: 'Card Two',
-                    value: switch2,
-                    onChanged: (val) => setState(() => switch2 = val),
-                  ),
-
-                  const SizedBox(height: 50),
-                ],
-              ),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background.png',
+              fit: BoxFit.cover,
             ),
           ),
-        ),
+
+          // Screens
+          IndexedStack(index: selectedIndex, children: pages),
+
+          // Bottom navigation bar
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: CustomNavigationBar(
+              currentIndex: selectedIndex,
+              onTap: (index) {
+                setState(() => selectedIndex = index);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
