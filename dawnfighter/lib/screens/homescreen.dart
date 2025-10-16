@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/alarmCard.dart';
+import 'settings_screen.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -15,6 +16,20 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black54,
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+            },
+          ),
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
