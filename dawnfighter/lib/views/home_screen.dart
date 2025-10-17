@@ -23,7 +23,7 @@ Widget ARviewButton(BuildContext context) {
     onPressed: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ArView()),
+        MaterialPageRoute(builder: (context) => const AppArView()),
       );
     },
     child: const Text('Go to AR View'),
