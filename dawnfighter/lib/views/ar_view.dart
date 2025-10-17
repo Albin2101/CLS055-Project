@@ -13,14 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart';
 import '../models.dart';
 
-class ArView extends StatefulWidget {
-  const ArView({super.key});
+class AppArView extends StatefulWidget {
+  const AppArView({super.key});
 
   @override
-  State<ArView> createState() => _ArViewState();
+  State<AppArView> createState() => _AppArViewState();
 }
 
-class _ArViewState extends State<ArView> {
+class _AppArViewState extends State<AppArView> {
   ARSessionManager? sessionManager;
   ARObjectManager? objectManager;
   ARAnchorManager? anchorManager;
@@ -100,7 +100,7 @@ class _ArViewState extends State<ArView> {
       handlePans: true,
       showPlanes: true,
       showWorldOrigin: false,
-      handleTaps: false,
+      handleTaps: true,
     );
 
     objectManager!.onInitialize();
