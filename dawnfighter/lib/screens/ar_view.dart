@@ -1,13 +1,11 @@
 import 'package:ar_flutter_plugin_updated/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_updated/datatypes/config_planedetection.dart';
-import 'package:ar_flutter_plugin_updated/datatypes/hittest_result_types.dart';
 import 'package:ar_flutter_plugin_updated/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_anchor_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_location_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
-import 'package:ar_flutter_plugin_updated/models/ar_hittest_result.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart';
@@ -106,10 +104,7 @@ class _AppArViewState extends State<AppArView> {
 
     objectManager!.onInitialize();
 
-    sessionManager!.onPlaneOrPointTap = detectPlaneAndUserTap;
-    sessionManager!.onPlaneDetected = (int planeCount) {
-      planeDetected(planeCount);
-    };
+    sessionManager!.onPlaneDetected = onPlaneDetectedSpawnObject;
 
     objectManager!.onPanStart = duringOnPanStart;
     objectManager!.onPanChange = duringOnPanChange;
@@ -120,90 +115,59 @@ class _AppArViewState extends State<AppArView> {
     objectManager!.onRotationEnd = duringOnRotationEnd;
   }
 
-  void planeDetected(int planeCount) async {
-    debugPrint("Plane detected: $planeCount");
-
-    if (!hasSpawnedObject && planeCount > 0) {
-      hasSpawnedObject = true;
-
-      // Create an anchor about 0.5 meters in front of the camera
-      final cameraPose = await sessionManager!.getCameraPose();
-      if (cameraPose == null) {
-        debugPrint("⚠️ No camera pose available yet.");
-        return;
-      }
-
-      // Translate the camera forward a bit
-      final Matrix4 cameraTransform = cameraPose;
-      final Vector3 forward = Vector3(0, 0, -0.5); // 0.5m in front
-      final Vector3 translation = Vector3.zero()..add(forward);
-      cameraTransform.translate(translation.x, translation.y, translation.z);
-
-      // Create a manual anchor
-      final anchor = ARPlaneAnchor(transformation: cameraTransform);
-      bool? didAddAnchor = await anchorManager!.addAnchor(anchor);
-      if (didAddAnchor == true) {
-        allAnchors.add(anchor);
-        debugPrint("✅ Anchor created in front of camera");
-
-        // Add the model to the new anchor
-        final node = ARNode(
-          type: NodeType.webGLB,
-          uri: Models.supabaseBaguette,
-          scale: Vector3(0.62, 0.62, 0.62),
-          position: Vector3.zero(),
-          rotation: Vector4(1.0, 0.0, 0.0, 0.0),
-        );
-
-        bool? didAddNode = await objectManager!.addNode(
-          node,
-          planeAnchor: anchor,
-        );
-
-        if (didAddNode == true) {
-          allObjects.add(node);
-          debugPrint("✅ Model placed automatically");
-        } else {
-          sessionManager!.onError!("❌ Failed to add model to anchor");
-        }
-      } else {
-        sessionManager!.onError!("❌ Failed to add anchor");
-      }
+  void onPlaneDetectedSpawnObject(int planeCount) async {
+    if (hasSpawnedObject || planeCount == 0) {
+      return; // Already spawned or no planes yet
     }
-  }
 
-  Future<void> detectPlaneAndUserTap(List<ARHitTestResult> hitResults) async {
-    var tapResults = hitResults.firstWhere(
-      (ARHitTestResult hitpoint) => hitpoint.type == ARHitTestResultType.plane,
-    );
-    if (tapResults != null) {
-      var planeARAnchor = ARPlaneAnchor(
-        transformation: tapResults.worldTransform,
+    debugPrint("🎯 Plane detected: $planeCount - attempting to spawn object");
+
+    // Get the current camera pose to place object relative to view
+    var cameraPose = await sessionManager!.getCameraPose();
+    if (cameraPose == null) {
+      debugPrint("⚠️ Camera pose not available yet");
+      return;
+    }
+
+    hasSpawnedObject = true;
+
+    // Create transformation matrix for the object position
+    // Place it slightly in front and down from the camera
+    var objectTransform = Matrix4.copy(cameraPose);
+    objectTransform.translate(0.0, -0.3, -1.0); // Move forward 1m, down 0.3m
+
+    // Create an anchor at this position
+    var newAnchor = ARPlaneAnchor(transformation: objectTransform);
+    bool? didAddAnchor = await anchorManager!.addAnchor(newAnchor);
+
+    if (didAddAnchor == true) {
+      allAnchors.add(newAnchor);
+      debugPrint("✅ Anchor created at fixed position");
+
+      // Add the model to the anchor
+      var newNode = ARNode(
+        type: NodeType.webGLB,
+        uri: Models.supabaseBumling,
+        scale: Vector3(0.05, 0.05, 0.05),
+        position: Vector3.zero(), // Position relative to anchor
+        rotation: Vector4(1.0, 0.0, 0.0, 0.0),
       );
-      bool? didAddAnchor = await anchorManager!.addAnchor(planeARAnchor);
-      if (didAddAnchor == true) {
-        allAnchors.add(planeARAnchor);
-        var newNode = ARNode(
-          type: NodeType.webGLB,
-          uri: Models.supabaseBaguette,
-          scale: Vector3(0.62, 0.62, 0.62),
-          position: Vector3(0.0, 0.0, 0.0),
-          rotation: Vector4(1.0, 0.0, 0.0, 0.0),
-        );
 
-        bool? didAddNodeToAnchor = await objectManager!.addNode(
-          newNode,
-          planeAnchor: planeARAnchor,
-        );
+      bool? didAddNode = await objectManager!.addNode(
+        newNode,
+        planeAnchor: newAnchor,
+      );
 
-        if (didAddNodeToAnchor == true) {
-          allObjects.add(newNode);
-        } else {
-          sessionManager!.onError!("Object failed to attach anchor");
-        }
+      if (didAddNode == true) {
+        allObjects.add(newNode);
+        debugPrint("✅ Model placed automatically at fixed position");
       } else {
-        sessionManager!.onError!("No plane found");
+        sessionManager!.onError!("❌ Failed to add model to anchor");
+        hasSpawnedObject = false; // Reset to try again
       }
+    } else {
+      sessionManager!.onError!("❌ Failed to add anchor");
+      hasSpawnedObject = false; // Reset to try again
     }
   }
 }
