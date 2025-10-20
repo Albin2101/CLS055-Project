@@ -82,7 +82,7 @@ class CustomNavigationBar extends StatelessWidget {
       onTap: () => onTap(index),
       child: ColorFiltered(
         colorFilter: ColorFilter.mode(
-          isSelected ? Colors.white : Colors.white70,
+          isSelected ? Colors.white : Color.fromRGBO(233, 151, 238, 1.0),
           BlendMode.srcIn,
         ),
         child: SizedBox(width: 48, height: 48, child: Center(child: icon)),

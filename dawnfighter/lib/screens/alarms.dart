@@ -34,7 +34,7 @@ class _AlarmsState extends State<Alarms> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'PressStart2P',
-                  fontSize: 48,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
@@ -48,7 +48,7 @@ class _AlarmsState extends State<Alarms> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 50,
+                    vertical: 36,
                   ),
                   child: Column(
                     children: [
@@ -69,7 +69,7 @@ class _AlarmsState extends State<Alarms> {
                             },
                           ),
                         );
-                      }).toList(),
+                      }),
 
                       const SizedBox(height: 20),
 

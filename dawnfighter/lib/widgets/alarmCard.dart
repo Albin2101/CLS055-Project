@@ -35,14 +35,14 @@ class AlarmCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   title,
                   style: TextStyle(
                     fontFamily: 'PressStart2P',
-                    color: value ? Colors.white : Color(0xFF391B4F),
+                    color: value ? Colors.white : Color.fromRGBO(233, 151, 238, 1.0),
                     fontSize: 36,
                   ),
                 ),
@@ -57,11 +57,11 @@ class AlarmCard extends StatelessWidget {
                       child: Text(
                         day,
                         style: TextStyle(
-                          fontFamily: 'PressStart2P',
+                          fontFamily: 'Rubik',
                           color: isActive
                               ? Colors.white
-                              : Color(0xFF391B4F), // Color(0xFFE997EE),
-                          fontSize: 12,
+                              : Color.fromRGBO(233, 151, 238, 1.0), // Color(0xFFE997EE),
+                          fontSize: 16,
                         ),
                       ),
                     );
