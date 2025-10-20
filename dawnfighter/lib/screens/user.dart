@@ -60,9 +60,9 @@ class _UserState extends State<User> {
                   // show decorative user card
                   const UserCard(
                     name: 'Clara',
-                    stars: 2564,
-                    moons: 22,
-                    suns: 36,
+                    points: 2564,
+                    streak: 22,
+                    monsters: 36,
                   ),
                   const SizedBox(height: 12),
                   // settings / menu card

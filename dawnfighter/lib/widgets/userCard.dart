@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class UserCard extends StatelessWidget {
   final String name;
-  final int stars;
-  final int moons;
-  final int suns;
+  final int points;
+  final int streak;
+  final int monsters;
 
   const UserCard({
     super.key,
     required this.name,
-    required this.stars,
-    required this.moons,
-    required this.suns,
+    required this.points,
+    required this.streak,
+    required this.monsters,
   });
 
   @override
@@ -62,11 +63,11 @@ class UserCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      _statIconText('★', stars),
+                      _statIconText('assets/icons/Star.svg', points),
                       const SizedBox(width: 12),
-                      _statIconText('🌙', moons),
+                      _statIconText('assets/icons/Flame.svg', streak),
                       const SizedBox(width: 12),
-                      _statIconText('☀', suns),
+                      _statIconText('assets/icons/Monster.svg', monsters),
                     ],
                   ),
                 ],
@@ -78,14 +79,22 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  Widget _statIconText(String icon, int value) => Row(
+  Widget _statIconText(String assetPath, int value) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text(icon, style: const TextStyle(fontSize: 14, color: Colors.white)),
-      const SizedBox(width: 4),
+      SizedBox(
+        width: 20,
+        height: 20,
+        child: SvgPicture.asset(
+          assetPath,
+          colorFilter: const ColorFilter.mode(Color(0xFF1C1B45), BlendMode.srcIn), 
+          fit: BoxFit.contain,
+        ),
+      ),
+      const SizedBox(width: 6),
       Text(
         value.toString(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: const TextStyle(fontSize: 16, color: Colors.white),
       ),
     ],
   );
