@@ -183,6 +183,17 @@ class _AppArViewState extends State<AppArView> {
       if (didAddNode == true) {
         allObjects.add(newNode);
         debugPrint("✅ Model placed automatically at fixed position");
+
+        // Hide plane visualization after successful spawn
+        // Re-initialize session with planes hidden
+        sessionManager!.onInitialize(
+          showFeaturePoints: false,
+          handlePans: true,
+          showPlanes: false, // Hide planes after spawning
+          showWorldOrigin: false,
+          handleTaps: false,
+        );
+        debugPrint("🛑 Plane visualization hidden");
       } else {
         sessionManager!.onError!("❌ Failed to add model to anchor");
         hasSpawnedObject = false; // Reset to try again
