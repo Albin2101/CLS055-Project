@@ -31,4 +31,9 @@ class FirestoreService {
   ) async {
     return await _db.collection('users').doc(uid).get();
   }
+
+  /// Stream user document for live updates
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> userStream(String uid) {
+    return _db.collection('users').doc(uid).snapshots();
+  }
 }
