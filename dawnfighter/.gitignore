@@ -43,3 +43,31 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase / platform config (may contain API keys)
+# Android
+/android/app/google-services.json
+
+# iOS
+/ios/GoogleService-Info.plist
+
+# FlutterFire generated options (may include apiKey)
+/lib/firebase_options.dart
+
+# General firebase files
+firebase.json
+.firebaserc
+
+# Service account / credentials
+**/serviceAccountKey.json
+**/service-account.json
+**/credentials.json
+GOOGLE_APPLICATION_CREDENTIALS
+
+# Environment files (may contain keys)
+.env
+.env.*
+
+# Web firebase config files
+/web/firebase-messaging-sw.js
+/web/firebase-config*.js
