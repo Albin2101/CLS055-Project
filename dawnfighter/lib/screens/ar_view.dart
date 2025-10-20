@@ -27,6 +27,7 @@ class _AppArViewState extends State<AppArView> {
 
   List<ARNode> allObjects = [];
   List<ARAnchor> allAnchors = [];
+  bool hasSpawnedObject = false;
 
   @override
   Widget build(BuildContext context) {
@@ -100,12 +101,15 @@ class _AppArViewState extends State<AppArView> {
       handlePans: true,
       showPlanes: true,
       showWorldOrigin: false,
-      handleTaps: true,
+      handleTaps: false,
     );
 
     objectManager!.onInitialize();
 
     sessionManager!.onPlaneOrPointTap = detectPlaneAndUserTap;
+    sessionManager!.onPlaneDetected = (int planeCount) {
+      planeDetected(planeCount);
+    };
 
     objectManager!.onPanStart = duringOnPanStart;
     objectManager!.onPanChange = duringOnPanChange;
@@ -114,6 +118,58 @@ class _AppArViewState extends State<AppArView> {
     objectManager!.onRotationStart = duringOnRotationStart;
     objectManager!.onRotationChange = duringOnRotationChange;
     objectManager!.onRotationEnd = duringOnRotationEnd;
+  }
+
+  void planeDetected(int planeCount) async {
+    debugPrint("Plane detected: $planeCount");
+
+    if (!hasSpawnedObject && planeCount > 0) {
+      hasSpawnedObject = true;
+
+      // Create an anchor about 0.5 meters in front of the camera
+      final cameraPose = await sessionManager!.getCameraPose();
+      if (cameraPose == null) {
+        debugPrint("⚠️ No camera pose available yet.");
+        return;
+      }
+
+      // Translate the camera forward a bit
+      final Matrix4 cameraTransform = cameraPose;
+      final Vector3 forward = Vector3(0, 0, -0.5); // 0.5m in front
+      final Vector3 translation = Vector3.zero()..add(forward);
+      cameraTransform.translate(translation.x, translation.y, translation.z);
+
+      // Create a manual anchor
+      final anchor = ARPlaneAnchor(transformation: cameraTransform);
+      bool? didAddAnchor = await anchorManager!.addAnchor(anchor);
+      if (didAddAnchor == true) {
+        allAnchors.add(anchor);
+        debugPrint("✅ Anchor created in front of camera");
+
+        // Add the model to the new anchor
+        final node = ARNode(
+          type: NodeType.webGLB,
+          uri: Models.supabaseBaguette,
+          scale: Vector3(0.62, 0.62, 0.62),
+          position: Vector3.zero(),
+          rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+        );
+
+        bool? didAddNode = await objectManager!.addNode(
+          node,
+          planeAnchor: anchor,
+        );
+
+        if (didAddNode == true) {
+          allObjects.add(node);
+          debugPrint("✅ Model placed automatically");
+        } else {
+          sessionManager!.onError!("❌ Failed to add model to anchor");
+        }
+      } else {
+        sessionManager!.onError!("❌ Failed to add anchor");
+      }
+    }
   }
 
   Future<void> detectPlaneAndUserTap(List<ARHitTestResult> hitResults) async {
