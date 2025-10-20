@@ -34,6 +34,15 @@ class _HomescreenState extends State<Homescreen> {
           // Screens
           IndexedStack(index: selectedIndex, children: pages),
 
+          // Top AR button
+          Positioned(
+            top: 20, // adjust as needed (20 px from top)
+            right: 16, // adjust horizontal position
+            child: SafeArea(
+              child: ARviewButton(context),
+            ),
+          ),
+
           // Bottom navigation bar
           Align(
             alignment: Alignment.bottomCenter,
@@ -46,7 +55,6 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ],
       ),
-      floatingActionButton: ARviewButton(context),
     );
   }
 }
@@ -59,6 +67,6 @@ Widget ARviewButton(BuildContext context) {
         MaterialPageRoute(builder: (context) => const AppArView()),
       );
     },
-    child: const Text('Go to AR View'),
+    child: const Text('AR View'),
   );
 }
