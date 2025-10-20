@@ -3,6 +3,7 @@ import 'social.dart';
 import 'alarms.dart';
 import 'user.dart';
 import '../widgets/navigationBar.dart';
+import 'package:dawnfighter/screens/ar_view.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -45,6 +46,19 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ],
       ),
+      floatingActionButton: ARviewButton(context),
     );
   }
+}
+
+Widget ARviewButton(BuildContext context) {
+  return ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AppArView()),
+      );
+    },
+    child: const Text('Go to AR View'),
+  );
 }
