@@ -6,6 +6,7 @@ import '../widgets/navigationBar.dart';
 import 'settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import '../services/firestore_service.dart';
+import 'package:dawnfighter/screens/ar_view.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -63,30 +64,20 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Save score'),
-        icon: const Icon(Icons.save),
-        onPressed: () async {
-          final user = fb_auth.FirebaseAuth.instance.currentUser;
-          if (user == null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('No signed-in user')));
-            return;
-          }
-          setState(() => _localScore += 1);
-          try {
-            await FirestoreService.setUserScore(user.uid, _localScore);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Saved score: $_localScore')),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Failed to save score: $e')));
-          }
-        },
-      ),
+      floatingActionButton: ARviewButton(context),
+      
     );
   }
+}
+
+Widget ARviewButton(BuildContext context) {
+  return ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AppArView()),
+      );
+    },
+    child: const Text('Go to AR View'),
+  );
 }

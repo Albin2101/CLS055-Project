@@ -30,16 +30,17 @@ class CustomNavigationBar extends StatelessWidget {
               padding: const EdgeInsets.only(top: 16),
               child: _buildNavItem(
                 icon: SvgPicture.asset(
-                  'assets/icons/group.svg',
+                  'assets/icons/Group.svg',
                   width: 40,
                   height: 40,
+                  placeholderBuilder: (_) => const CircularProgressIndicator(),
                 ),
                 index: 0,
               ),
             ),
             _buildNavItem(
               icon: SvgPicture.asset(
-                'assets/icons/clock.svg',
+                'assets/icons/Clock.svg',
                 width: 50,
                 height: 50,
               ),
@@ -49,7 +50,7 @@ class CustomNavigationBar extends StatelessWidget {
               padding: const EdgeInsets.only(top: 16),
               child: _buildNavItem(
                 icon: SvgPicture.asset(
-                  'assets/icons/user.svg',
+                  'assets/icons/User.svg',
                   width: 40,
                   height: 40,
                 ),
