@@ -8,7 +8,7 @@ import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:flutter/material.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:vector_math/vector_math_64.dart' as vm;
 import '../models.dart';
 
 class AppArView extends StatefulWidget {
@@ -26,6 +26,7 @@ class _AppArViewState extends State<AppArView> {
   List<ARNode> allObjects = [];
   List<ARAnchor> allAnchors = [];
   bool hasSpawnedObject = false;
+  int health = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +38,97 @@ class _AppArViewState extends State<AppArView> {
             planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
             onARViewCreated: createARView,
           ),
+          // Health bar at top center
+          Positioned(
+            top: 20,
+            left: 20,
+            right: 20,
+            child: Center(
+              child: Container(
+                width: 300,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Health: $health',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Health bar background
+                    Container(
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: health / 100,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            health > 50
+                                ? Colors.green
+                                : health > 25
+                                ? Colors.orange
+                                : Colors.red,
+                          ),
+                          minHeight: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Centered button at bottom
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  hit();
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 16,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: const Text('HIT!'),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  hit() {
+    setState(() {
+      health -= 10;
+      if (health < 0) {
+        health = 0; // Prevent negative health
+      }
+    });
+    print("Health reduced to: $health");
   }
 
   Future<void> removeAllObjects() async {
@@ -100,6 +189,7 @@ class _AppArViewState extends State<AppArView> {
       showPlanes: true,
       showWorldOrigin: false,
       handleTaps: false,
+      showAnimatedGuide: true,
     );
 
     objectManager!.onInitialize();
@@ -136,10 +226,10 @@ class _AppArViewState extends State<AppArView> {
 
     // Get camera's forward direction (Z-axis) from rotation matrix
     var cameraRotation = cameraPose.getRotation();
-    var cameraForward = cameraRotation * Vector3(0, 0, -1);
+    var cameraForward = cameraRotation * vm.Vector3(0, 0, -1);
 
     // Calculate position in front of camera (project onto horizontal plane)
-    var horizontalForward = Vector3(
+    var horizontalForward = vm.Vector3(
       cameraForward.x,
       0,
       cameraForward.z,
@@ -165,9 +255,9 @@ class _AppArViewState extends State<AppArView> {
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri: Models.supabaseBumling,
-        scale: Vector3(0.02, 0.02, 0.02),
-        position: Vector3.zero(), // Position relative to anchor
-        rotation: Vector4(
+        scale: vm.Vector3(0.02, 0.02, 0.02),
+        position: vm.Vector3.zero(), // Position relative to anchor
+        rotation: vm.Vector4(
           1.0,
           0.0,
           0.0,
@@ -192,8 +282,10 @@ class _AppArViewState extends State<AppArView> {
           showPlanes: false, // Hide planes after spawning
           showWorldOrigin: false,
           handleTaps: false,
+          showAnimatedGuide: false, // Hide hand animation after spawning
         );
         debugPrint("🛑 Plane visualization hidden");
+        debugPrint("🛑 Hand animation hidden");
       } else {
         sessionManager!.onError!("❌ Failed to add model to anchor");
         hasSpawnedObject = false; // Reset to try again
