@@ -9,15 +9,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: ^2.9.0
+  firebase_auth: ^4.4.0
+  cloud_firestore: ^4.9.0
   ar_flutter_plugin_updated: ^0.0.1
   vector_math: ^2.2.0
   pixelarticons: ^0.4.0
+  flutter_svg: ^2.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  flutter_svg: ^2.2.1
 
 flutter:
   uses-material-design: true

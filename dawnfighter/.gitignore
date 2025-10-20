@@ -44,30 +44,35 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase / platform config (may contain API keys)
-# Android
-/android/app/google-services.json
-
-# iOS
-/ios/GoogleService-Info.plist
-
-# FlutterFire generated options (may include apiKey)
+# Firebase generated options (keep out of VCS)
 /lib/firebase_options.dart
+# Optional: ignore platform-specific config files if you don't want them in repo
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
 
-# General firebase files
-firebase.json
-.firebaserc
+# Other possible platform config files that may contain API keys
+# Web
+/web/firebase-messaging-sw.js
+/web/firebase-config.js
+/web/firebase.js
 
-# Service account / credentials
-**/serviceAccountKey.json
-**/service-account.json
-**/credentials.json
-GOOGLE_APPLICATION_CREDENTIALS
+# macOS
+/macos/Runner/GoogleService-Info.plist
 
-# Environment files (may contain keys)
+# Windows
+/windows/runner/GoogleService-Info.plist
+
+# Linux
+/linux/runner/GoogleService-Info.plist
+
+# Desktop (other common names)
+**/firebase_options.dart
+
+# Environment files that sometimes hold keys
 .env
 .env.*
+env.local
 
-# Web firebase config files
-/web/firebase-messaging-sw.js
-/web/firebase-config*.js
+# CI or scripts that might accidentally include keys
+.github/workflows/**
+ci/**
