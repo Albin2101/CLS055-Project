@@ -1,13 +1,11 @@
 import 'package:ar_flutter_plugin_updated/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_updated/datatypes/config_planedetection.dart';
-import 'package:ar_flutter_plugin_updated/datatypes/hittest_result_types.dart';
 import 'package:ar_flutter_plugin_updated/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_anchor_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_location_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
-import 'package:ar_flutter_plugin_updated/models/ar_hittest_result.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart';
@@ -27,6 +25,7 @@ class _AppArViewState extends State<AppArView> {
 
   List<ARNode> allObjects = [];
   List<ARAnchor> allAnchors = [];
+  bool hasSpawnedObject = false;
 
   @override
   Widget build(BuildContext context) {
@@ -100,12 +99,12 @@ class _AppArViewState extends State<AppArView> {
       handlePans: true,
       showPlanes: true,
       showWorldOrigin: false,
-      handleTaps: true,
+      handleTaps: false,
     );
 
     objectManager!.onInitialize();
 
-    sessionManager!.onPlaneOrPointTap = detectPlaneAndUserTap;
+    sessionManager!.onPlaneDetected = onPlaneDetectedSpawnObject;
 
     objectManager!.onPanStart = duringOnPanStart;
     objectManager!.onPanChange = duringOnPanChange;
@@ -116,38 +115,92 @@ class _AppArViewState extends State<AppArView> {
     objectManager!.onRotationEnd = duringOnRotationEnd;
   }
 
-  Future<void> detectPlaneAndUserTap(List<ARHitTestResult> hitResults) async {
-    var tapResults = hitResults.firstWhere(
-      (ARHitTestResult hitpoint) => hitpoint.type == ARHitTestResultType.plane,
-    );
-    if (tapResults != null) {
-      var planeARAnchor = ARPlaneAnchor(
-        transformation: tapResults.worldTransform,
+  void onPlaneDetectedSpawnObject(int planeCount) async {
+    if (hasSpawnedObject || planeCount == 0) {
+      return; // Already spawned or no planes yet
+    }
+
+    debugPrint("🎯 Plane detected: $planeCount - attempting to spawn object");
+
+    // Get the current camera pose to place object relative to view
+    var cameraPose = await sessionManager!.getCameraPose();
+    if (cameraPose == null) {
+      debugPrint("⚠️ Camera pose not available yet");
+      return;
+    }
+
+    hasSpawnedObject = true;
+
+    // Extract position from camera pose but create upright orientation
+    var cameraPosition = cameraPose.getTranslation();
+
+    // Get camera's forward direction (Z-axis) from rotation matrix
+    var cameraRotation = cameraPose.getRotation();
+    var cameraForward = cameraRotation * Vector3(0, 0, -1);
+
+    // Calculate position in front of camera (project onto horizontal plane)
+    var horizontalForward = Vector3(
+      cameraForward.x,
+      0,
+      cameraForward.z,
+    ).normalized();
+    var targetPosition = cameraPosition + (horizontalForward * 1.0);
+    targetPosition.y =
+        cameraPosition.y - 0.3; // Place slightly below camera height
+
+    // Create transformation matrix with position only (no rotation)
+    // This keeps the object upright relative to world coordinates
+    var objectTransform = Matrix4.identity();
+    objectTransform.setTranslation(targetPosition);
+
+    // Create an anchor at this position
+    var newAnchor = ARPlaneAnchor(transformation: objectTransform);
+    bool? didAddAnchor = await anchorManager!.addAnchor(newAnchor);
+
+    if (didAddAnchor == true) {
+      allAnchors.add(newAnchor);
+      debugPrint("✅ Anchor created at fixed position");
+
+      // Add the model to the anchor
+      var newNode = ARNode(
+        type: NodeType.webGLB,
+        uri: Models.supabaseBumling,
+        scale: Vector3(0.02, 0.02, 0.02),
+        position: Vector3.zero(), // Position relative to anchor
+        rotation: Vector4(
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+        ), // Identity rotation - stands upright
       );
-      bool? didAddAnchor = await anchorManager!.addAnchor(planeARAnchor);
-      if (didAddAnchor == true) {
-        allAnchors.add(planeARAnchor);
-        var newNode = ARNode(
-          type: NodeType.webGLB,
-          uri: Models.supabaseBaguette,
-          scale: Vector3(0.62, 0.62, 0.62),
-          position: Vector3(0.0, 0.0, 0.0),
-          rotation: Vector4(1.0, 0.0, 0.0, 0.0),
-        );
 
-        bool? didAddNodeToAnchor = await objectManager!.addNode(
-          newNode,
-          planeAnchor: planeARAnchor,
-        );
+      bool? didAddNode = await objectManager!.addNode(
+        newNode,
+        planeAnchor: newAnchor,
+      );
 
-        if (didAddNodeToAnchor == true) {
-          allObjects.add(newNode);
-        } else {
-          sessionManager!.onError!("Object failed to attach anchor");
-        }
+      if (didAddNode == true) {
+        allObjects.add(newNode);
+        debugPrint("✅ Model placed automatically at fixed position");
+
+        // Hide plane visualization after successful spawn
+        // Re-initialize session with planes hidden
+        sessionManager!.onInitialize(
+          showFeaturePoints: false,
+          handlePans: true,
+          showPlanes: false, // Hide planes after spawning
+          showWorldOrigin: false,
+          handleTaps: false,
+        );
+        debugPrint("🛑 Plane visualization hidden");
       } else {
-        sessionManager!.onError!("No plane found");
+        sessionManager!.onError!("❌ Failed to add model to anchor");
+        hasSpawnedObject = false; // Reset to try again
       }
+    } else {
+      sessionManager!.onError!("❌ Failed to add anchor");
+      hasSpawnedObject = false; // Reset to try again
     }
   }
 }
