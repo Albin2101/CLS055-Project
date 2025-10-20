@@ -4,6 +4,8 @@ import 'alarms.dart';
 import 'user.dart';
 import '../widgets/navigationBar.dart';
 import 'settings_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import '../services/firestore_service.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -14,6 +16,7 @@ class Homescreen extends StatefulWidget {
 
 class _HomescreenState extends State<Homescreen> {
   int selectedIndex = 1;
+  int _localScore = 0;
 
   final List<Widget> pages = [const Social(), const Alarms(), const User()];
 
@@ -59,6 +62,30 @@ class _HomescreenState extends State<Homescreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Save score'),
+        icon: const Icon(Icons.save),
+        onPressed: () async {
+          final user = fb_auth.FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('No signed-in user')));
+            return;
+          }
+          setState(() => _localScore += 1);
+          try {
+            await FirestoreService.setUserScore(user.uid, _localScore);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Saved score: $_localScore')),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Failed to save score: $e')));
+          }
+        },
       ),
     );
   }

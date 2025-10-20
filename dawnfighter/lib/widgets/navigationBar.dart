@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pixelarticons/pixelarticons.dart';
 
 class CustomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -34,10 +33,6 @@ class CustomNavigationBar extends StatelessWidget {
                   'assets/icons/group.svg',
                   width: 40,
                   height: 40,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
                 ),
                 index: 0,
               ),
@@ -47,10 +42,6 @@ class CustomNavigationBar extends StatelessWidget {
                 'assets/icons/clock.svg',
                 width: 50,
                 height: 50,
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcIn,
-                ),
               ),
               index: 1,
             ),
@@ -61,10 +52,6 @@ class CustomNavigationBar extends StatelessWidget {
                   'assets/icons/user.svg',
                   width: 40,
                   height: 40,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
                 ),
                 index: 2,
               ),
