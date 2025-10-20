@@ -5,4 +5,7 @@ class Models {
   //supabase
   static const String supabaseBaguette =
       "https://shnslvbwzezvsswiqttq.supabase.co/storage/v1/object/public/dawnfighter_models/baguette_bread_ujqhebs_mid.glb";
+
+  static const String supabaseBumling =
+      "https://shnslvbwzezvsswiqttq.supabase.co/storage/v1/object/public/dawnfighter_models/monster.glb";
 }

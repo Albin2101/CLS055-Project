@@ -131,10 +131,27 @@ class _AppArViewState extends State<AppArView> {
 
     hasSpawnedObject = true;
 
-    // Create transformation matrix for the object position
-    // Place it slightly in front and down from the camera
-    var objectTransform = Matrix4.copy(cameraPose);
-    objectTransform.translate(0.0, -0.3, -1.0); // Move forward 1m, down 0.3m
+    // Extract position from camera pose but create upright orientation
+    var cameraPosition = cameraPose.getTranslation();
+
+    // Get camera's forward direction (Z-axis) from rotation matrix
+    var cameraRotation = cameraPose.getRotation();
+    var cameraForward = cameraRotation * Vector3(0, 0, -1);
+
+    // Calculate position in front of camera (project onto horizontal plane)
+    var horizontalForward = Vector3(
+      cameraForward.x,
+      0,
+      cameraForward.z,
+    ).normalized();
+    var targetPosition = cameraPosition + (horizontalForward * 1.0);
+    targetPosition.y =
+        cameraPosition.y - 0.3; // Place slightly below camera height
+
+    // Create transformation matrix with position only (no rotation)
+    // This keeps the object upright relative to world coordinates
+    var objectTransform = Matrix4.identity();
+    objectTransform.setTranslation(targetPosition);
 
     // Create an anchor at this position
     var newAnchor = ARPlaneAnchor(transformation: objectTransform);
@@ -148,9 +165,14 @@ class _AppArViewState extends State<AppArView> {
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri: Models.supabaseBumling,
-        scale: Vector3(0.05, 0.05, 0.05),
+        scale: Vector3(0.02, 0.02, 0.02),
         position: Vector3.zero(), // Position relative to anchor
-        rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+        rotation: Vector4(
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+        ), // Identity rotation - stands upright
       );
 
       bool? didAddNode = await objectManager!.addNode(
