@@ -43,3 +43,36 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase generated options (keep out of VCS)
+/lib/firebase_options.dart
+# Optional: ignore platform-specific config files if you don't want them in repo
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+
+# Other possible platform config files that may contain API keys
+# Web
+/web/firebase-messaging-sw.js
+/web/firebase-config.js
+/web/firebase.js
+
+# macOS
+/macos/Runner/GoogleService-Info.plist
+
+# Windows
+/windows/runner/GoogleService-Info.plist
+
+# Linux
+/linux/runner/GoogleService-Info.plist
+
+# Desktop (other common names)
+**/firebase_options.dart
+
+# Environment files that sometimes hold keys
+.env
+.env.*
+env.local
+
+# CI or scripts that might accidentally include keys
+.github/workflows/**
+ci/**

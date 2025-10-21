@@ -33,10 +33,6 @@ class CustomNavigationBar extends StatelessWidget {
                   'assets/icons/Group.svg',
                   width: 40,
                   height: 40,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
                   placeholderBuilder: (_) => const CircularProgressIndicator(),
                 ),
                 index: 0,
@@ -47,10 +43,6 @@ class CustomNavigationBar extends StatelessWidget {
                 'assets/icons/Clock.svg',
                 width: 50,
                 height: 50,
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcIn,
-                ),
               ),
               index: 1,
             ),
@@ -61,10 +53,6 @@ class CustomNavigationBar extends StatelessWidget {
                   'assets/icons/User.svg',
                   width: 40,
                   height: 40,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
                 ),
                 index: 2,
               ),
