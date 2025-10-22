@@ -56,7 +56,7 @@ class SettingsCard extends StatelessWidget {
                               ),
                             ),
                           )
-                        : const Icon(Icons.chevron_right, color: Colors.white))
+                        : null)
                   : const Icon(Icons.chevron_right, color: Colors.white),
               onTap: isLogout && !isLoading ? onLogout : () {},
             );
