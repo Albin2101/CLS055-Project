@@ -81,14 +81,22 @@ class _LoginCardState extends State<LoginCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Username field
+            // Email field
             TextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              style: TextStyle(fontFamily: 'PressStart2P', fontSize: 14, color: Colors.white.withOpacity(0.95)),
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 14,
+                color: Colors.white.withValues(),
+              ),
               decoration: InputDecoration(
                 hintText: 'Email Address',
-                hintStyle: TextStyle(fontFamily: 'PressStart2P', fontSize: 12, color: Colors.white70.withOpacity(0.9)),
+                hintStyle: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 12,
+                  color: Colors.white70.withValues(),
+                ),
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white24),
                 ),
@@ -100,14 +108,23 @@ class _LoginCardState extends State<LoginCard> {
               ),
             ),
             const SizedBox(height: 12),
+
             // Password field
             TextField(
               controller: _passwordController,
               obscureText: true,
-              style: TextStyle(fontFamily: 'PressStart2P', fontSize: 14, color: Colors.white.withOpacity(0.95)),
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 14,
+                color: Colors.white.withValues(),
+              ),
               decoration: InputDecoration(
                 hintText: 'Password',
-                hintStyle: TextStyle(fontFamily: 'PressStart2P', fontSize: 12, color: Colors.white70.withOpacity(0.9)),
+                hintStyle: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 12,
+                  color: Colors.white70.withValues(),
+                ),
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white24),
                 ),
@@ -119,6 +136,7 @@ class _LoginCardState extends State<LoginCard> {
               ),
             ),
             const SizedBox(height: 18),
+
             SizedBox(
               width: 110,
               height: 38,
@@ -144,7 +162,11 @@ class _LoginCardState extends State<LoginCard> {
                       )
                     : const Text(
                         'Log in',
-                        style: TextStyle(fontFamily: 'PressStart2P', fontSize: 14, color: Colors.white),
+                        style: TextStyle(
+                          fontFamily: 'PressStart2P',
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
                       ),
               ),
             ),
