@@ -8,7 +8,7 @@ import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:flutter/material.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:vector_math/vector_math_64.dart' as vm;
 import '../models.dart';
 
 class AppArView extends StatefulWidget {
@@ -26,6 +26,17 @@ class _AppArViewState extends State<AppArView> {
   List<ARNode> allObjects = [];
   List<ARAnchor> allAnchors = [];
   bool hasSpawnedObject = false;
+  bool showSuccess = false;
+  int health = 5;
+
+  List<String> healthBars = [
+    "assets/images/healthbar/empty_health_bar.png",
+    "assets/images/healthbar/1..5_health_bar.png",
+    "assets/images/healthbar/2..5_health_bar.png",
+    "assets/images/healthbar/3..5_health_bar.png",
+    "assets/images/healthbar/4..5_health_bar.png",
+    "assets/images/healthbar/full_health_bar.png",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +48,105 @@ class _AppArViewState extends State<AppArView> {
             planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
             onARViewCreated: createARView,
           ),
+          // Health bar at top center
+          Positioned(
+            top: 20,
+            left: 20,
+            right: 20,
+            child: Center(
+              child: Image.asset(
+                healthBars[health],
+                width: 500,
+                height: 60,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          // Centered button at bottom
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  hit();
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 16,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: const Text('HIT!'),
+              ),
+            ),
+          ),
+          // Success overlay
+          if (showSuccess)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.8),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 100,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Successfully Slayed\nthe Monster!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: const Text(
+                          'Return to Menu',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  hit() {
+    setState(() {
+      health -= 1;
+      if (health < 0) {
+        health = 0; // Prevent negative health
+      }
+      if (health == 0) {
+        showSuccess = true;
+      }
+    });
+    print("Health reduced to: $health");
   }
 
   Future<void> removeAllObjects() async {
@@ -100,6 +207,7 @@ class _AppArViewState extends State<AppArView> {
       showPlanes: true,
       showWorldOrigin: false,
       handleTaps: false,
+      showAnimatedGuide: true,
     );
 
     objectManager!.onInitialize();
@@ -136,10 +244,10 @@ class _AppArViewState extends State<AppArView> {
 
     // Get camera's forward direction (Z-axis) from rotation matrix
     var cameraRotation = cameraPose.getRotation();
-    var cameraForward = cameraRotation * Vector3(0, 0, -1);
+    var cameraForward = cameraRotation * vm.Vector3(0, 0, -1);
 
     // Calculate position in front of camera (project onto horizontal plane)
-    var horizontalForward = Vector3(
+    var horizontalForward = vm.Vector3(
       cameraForward.x,
       0,
       cameraForward.z,
@@ -165,13 +273,13 @@ class _AppArViewState extends State<AppArView> {
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri: Models.supabaseBumling,
-        scale: Vector3(0.02, 0.02, 0.02),
-        position: Vector3.zero(), // Position relative to anchor
-        rotation: Vector4(
+        scale: vm.Vector3(0.7, 0.7, 0.7),
+        position: vm.Vector3.zero(), // Position relative to anchor
+        rotation: vm.Vector4(
           1.0,
           0.0,
           0.0,
-          0.0,
+          1.5708,
         ), // Identity rotation - stands upright
       );
 
@@ -192,8 +300,10 @@ class _AppArViewState extends State<AppArView> {
           showPlanes: false, // Hide planes after spawning
           showWorldOrigin: false,
           handleTaps: false,
+          showAnimatedGuide: false, // Hide hand animation after spawning
         );
         debugPrint("🛑 Plane visualization hidden");
+        debugPrint("🛑 Hand animation hidden");
       } else {
         sessionManager!.onError!("❌ Failed to add model to anchor");
         hasSpawnedObject = false; // Reset to try again
