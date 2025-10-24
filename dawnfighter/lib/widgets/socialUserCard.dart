@@ -28,15 +28,24 @@ class SocialUserCard extends StatelessWidget {
               height: 208,
               fit: BoxFit.cover,
             ),
+            // place name centered near the bottom of the avatar and constrain
+            // it so long names get truncated with an ellipsis instead of overflowing
             Positioned(
-              bottom: -10,
-              right: 0,
-              child: Text(
-                name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontFamily: 'PressStart2P',
+              bottom: 8,
+              left: 8,
+              right: 8,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontFamily: 'PressStart2P',
+                  ),
                 ),
               ),
             ),
@@ -51,7 +60,11 @@ class SocialUserCard extends StatelessWidget {
               fit: BoxFit.fill,
             ),
             boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(2, 4)),
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(2, 4),
+              ),
             ],
           ),
           child: Padding(
@@ -78,7 +91,10 @@ class SocialUserCard extends StatelessWidget {
         height: 28,
         child: SvgPicture.asset(
           assetPath,
-          colorFilter: const ColorFilter.mode(Color(0xFF1C1B45), BlendMode.srcIn), 
+          colorFilter: const ColorFilter.mode(
+            Color(0xFF1C1B45),
+            BlendMode.srcIn,
+          ),
           fit: BoxFit.contain,
         ),
       ),
@@ -86,12 +102,11 @@ class SocialUserCard extends StatelessWidget {
       Text(
         value.toString(),
         style: const TextStyle(
-          fontFamily: 'PressStart2P', 
-          fontSize: 16, 
-          color: Colors.white),
+          fontFamily: 'PressStart2P',
+          fontSize: 16,
+          color: Colors.white,
+        ),
       ),
     ],
   );
 }
-
-

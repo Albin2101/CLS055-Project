@@ -86,17 +86,11 @@ class LeaderboardCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       // height sized to show ~6 items comfortably
-      constraints: const BoxConstraints(minHeight: 120, maxHeight: 260),
+      constraints: const BoxConstraints(minHeight: 321, maxHeight: 321),
       decoration: BoxDecoration(
-        color: const Color(0xFF7A3DA9),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(2, 4)),
-        ],
         image: const DecorationImage(
-          image: AssetImage('assets/images/userCard.png'),
+          image: AssetImage('assets/images/leaderboardCard.png'),
           fit: BoxFit.fill,
-          opacity: 0.0,
         ),
       ),
       child: Padding(
@@ -104,7 +98,19 @@ class LeaderboardCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // header (optional) - removed to match the compact design
+            // header
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text(
+                ' Leaderboard',
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
             Expanded(
               child: ListView.separated(
                 physics: const NeverScrollableScrollPhysics(),
