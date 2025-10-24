@@ -198,13 +198,13 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
                 hintStyle: TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 12,
-                  color: Colors.white70.withValues(),
+                    color: Color(0xFFE997EE),
                 ),
                 enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
+                  borderSide: BorderSide(color: Color(0xA0E997EE)),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white70),
+                  borderSide: BorderSide(color: Color(0xFFE997EE)),
                 ),
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -224,13 +224,13 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
                 hintStyle: TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 12,
-                  color: Colors.white70.withValues(),
+                    color: Color(0xFFE997EE),
                 ),
                 enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
+                  borderSide: BorderSide(color: Color(0xA0E997EE)),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white70),
+                  borderSide: BorderSide(color: Color(0xFFE997EE)),
                 ),
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -250,13 +250,13 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
                 hintStyle: TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 12,
-                  color: Colors.white70.withValues(),
+                    color: Color(0xFFE997EE),
                 ),
                 enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
+                  borderSide: BorderSide(color: Color(0xA0E997EE)),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white70),
+                  borderSide: BorderSide(color: Color(0xFFE997EE)),
                 ),
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -268,9 +268,9 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
               height: 38,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2C1533),
+                  backgroundColor: const Color(0xFF391B4F),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                 ),
                 onPressed: _isLoading ? null : _createAccount,

@@ -29,22 +29,22 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       'DAWNFIGHTER AR',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'PressStart2P',
-                        fontSize: 32,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
                       ),
                     ),
-                    const SizedBox(height: 80),
-                    const Text(
+                    SizedBox(height:64),
+                    Text(
                       'Welcome!',
                       style: TextStyle(
                         fontFamily: 'PressStart2P',
@@ -54,8 +54,7 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                         shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
                       ),
                     ),
-                    const SizedBox(height: 30),
-
+                    SizedBox(height:24),
                     // show either the login card or the create-account card in the same slot
                     // keep the slot a fixed height so the title above doesn't shift when
                     // a taller card (create-account) is shown — extra space is below the card
@@ -106,33 +105,33 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 12),
-
                     // Hint text above create account (hidden when create form visible)
                     if (!_showCreate) ...[
-                      const Text(
+                      Text(
                         "Don't have an account?",
                         style: TextStyle(
                           fontFamily: 'PressStart2P',
                           fontSize: 12,
                           color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(1.0, 1.0),  
+                              blurRadius: 3.0,           
+                              color: Color(0x55391B4F),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    //padding
-                    if (_showCreate) ...[
-                      const SizedBox(height: 25)
+                      SizedBox(height: 8),
                     ],
 
                     // Create account CTA (toggle which card is shown) — sized to content
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2C1533),
+                          backgroundColor: const Color(0xFF391B4F),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(0),
                           ),
                           minimumSize: const Size(0, 38),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -149,8 +148,6 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 50),
                   ],
                 ),
               ),

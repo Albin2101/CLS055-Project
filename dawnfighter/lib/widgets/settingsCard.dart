@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
+import 'package:pixelarticons/pixelarticons.dart';
 
 class SettingsCard extends StatefulWidget {
   final List<String> items;
@@ -133,7 +134,7 @@ class _SettingsCardState extends State<SettingsCard> {
                         ),
                       )
                     : null)
-              : const Icon(Icons.chevron_right, color: Colors.white),
+              : const Icon(Pixel.chevronright, color: Colors.white),
           onTap: isLogout && !widget.isLoading
               ? widget.onLogout
               : () {
@@ -153,7 +154,7 @@ class _SettingsCardState extends State<SettingsCard> {
         // Back list-item with left chevron
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.chevron_left, color: Colors.white),
+          leading: const Icon(Pixel.chevronleft, color: Colors.white),
           title: const Text(
             'Back',
             style: TextStyle(
@@ -173,12 +174,16 @@ class _SettingsCardState extends State<SettingsCard> {
           ),
           decoration: InputDecoration(
             hintText: 'Player name',
-            hintStyle: TextStyle(color: Colors.white70.withOpacity(0.9)),
+            hintStyle: TextStyle(
+              fontFamily: 'PressStart2P',
+              fontSize: 12,
+                color: Color(0xFFE997EE),
+            ),
             enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white24),
+              borderSide: BorderSide(color: Color(0xA0E997EE)),
             ),
             focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white70),
+              borderSide: BorderSide(color: Color(0xFFE997EE)),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -189,9 +194,9 @@ class _SettingsCardState extends State<SettingsCard> {
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2C1533),
+              backgroundColor: const Color(0xFF391B4F),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(0),
               ),
               minimumSize: const Size(0, 38),
               padding: const EdgeInsets.symmetric(horizontal: 16),
