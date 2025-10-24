@@ -1,3 +1,4 @@
+import 'package:dawnfighter/widgets/socialUserCard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/userCard.dart';
@@ -87,7 +88,7 @@ class _SocialState extends State<Social> {
                       ? (data['monsters'] as num).toInt()
                       : 0;
 
-                  return UserCard(
+                  return SocialUserCard(
                     name: name,
                     points: points,
                     streak: streak,

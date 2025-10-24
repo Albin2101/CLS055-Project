@@ -62,11 +62,10 @@ class UserCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _statIconText('assets/icons/Star.svg', points),
-                      const SizedBox(width: 12),
                       _statIconText('assets/icons/Flame.svg', streak),
-                      const SizedBox(width: 12),
                       _statIconText('assets/icons/Monster.svg', monsters),
                     ],
                   ),
@@ -94,7 +93,10 @@ class UserCard extends StatelessWidget {
       const SizedBox(width: 6),
       Text(
         value.toString(),
-        style: const TextStyle(fontSize: 16, color: Colors.white),
+        style: const TextStyle(
+          fontFamily: 'PressStart2P',
+          fontSize: 12, 
+          color: Colors.white),
       ),
     ],
   );
