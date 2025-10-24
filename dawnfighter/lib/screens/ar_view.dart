@@ -53,31 +53,13 @@ class _AppArViewState extends State<AppArView> {
             left: 20,
             right: 20,
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    healthBars[(health / 10).ceil()],
-                    width: 500,
-                    height: 60,
-                    fit: BoxFit.contain,
-                  ),
-                  Text(
-                    'Health: $health',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 4.0,
-                          color: Colors.black,
-                          offset: Offset(2.0, 2.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: Container(
+                child: Image.asset(
+                  healthBars[(health / 10).ceil()],
+                  width: 500,
+                  height: 60,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
