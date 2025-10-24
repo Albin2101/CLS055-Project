@@ -44,6 +44,18 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Android/Gradle build outputs (ignore all build directories under android)
+/android/**/build/
+/android/**/.gradle/
+/android/.gradle/
+/android/app/**/build/
+/android/local.properties
+
+# Gradle caches and wrapper
+/.gradle/
+/.gradle
+
+
 # Firebase generated options (keep out of VCS)
 /lib/firebase_options.dart
 # Optional: ignore platform-specific config files if you don't want them in repo
