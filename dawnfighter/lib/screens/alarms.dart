@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pixelarticons/pixelarticons.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../widgets/alarmCard.dart';
+import '../alarmManager.dart';
+import 'editAlarm.dart';
 
 class Alarms extends StatefulWidget {
   const Alarms({super.key});
@@ -10,13 +14,47 @@ class Alarms extends StatefulWidget {
 }
 
 class _AlarmsState extends State<Alarms> {
-  List<String> alarms = ['07:00', '06:45']; // Alarms
-  List<bool> switches = [true, true]; // Switch states
-  List<List<bool>> alarmDays = [
-    // Active days
-    [true, true, true, true, true, false, false],
-    [false, true, false, true, true, true, false],
+  int? _deleteIndex; // which card is in delete-mode (null = none)
+
+  List<Map<String, dynamic>> alarms = [
+    {
+      'time': DateTime.parse('2025-10-24 20:00:04Z'),
+      'days': [false, false, false, false, true, true, false],
+      'enabled': true,
+    },
+    {
+      'time': DateTime.now(),
+      'days': [false, false, false, false, false, false, false],
+      'enabled': true,
+    },
   ];
+
+  Future<void> _editAlarm(int index) async {
+    // clear delete-mode before editing
+    setState(() => _deleteIndex = null);
+
+    final alarm = alarms[index];
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            EditAlarm(initialTime: alarm['time'], initialDays: alarm['days']),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        alarms[index]['time'] = result['time'];
+        alarms[index]['days'] = result['days'];
+      });
+
+      await scheduleAlarm(
+        id: index,
+        time: result['time'],
+        days: result['days'],
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +72,7 @@ class _AlarmsState extends State<Alarms> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'PressStart2P',
-                  fontSize: 36,
+                  fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
@@ -45,114 +83,116 @@ class _AlarmsState extends State<Alarms> {
             // Scrollable list
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 36,
-                  ),
-                  child: Column(
-                    children: [
-                      // AlarmCards
-                      ...alarms.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final time = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: AlarmCard(
-                            title: time,
-                            days: alarmDays[index],
-                            value: switches[index],
-                            onChanged: (val) {
-                              setState(() {
-                                switches[index] = val;
-                              });
-                            },
-                          ),
-                        );
-                      }),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 50,
+                    ),
+                    child: Column(
+                      children: [
+                        // AlarmCards
+                        ...alarms.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final alarm = entry.value;
+                          final time = alarm['time'] as DateTime;
+                          final formattedTime =
+                              '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
-                      const SizedBox(height: 20),
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: AlarmCard(
+                              title: formattedTime,
+                              value: alarm['enabled'],
+                              days: alarm['days'],
+                              showDelete: _deleteIndex == index,
+                              onChanged: (val) {
+                                setState(() => alarms[index]['enabled'] = val);
+                              },
+                              onTap: () => _editAlarm(index),
+                              onLongPress: () {
+                                setState(() => _deleteIndex = index);
+                              },
+                              onCancelDelete: () {
+                                setState(() => _deleteIndex = null);
+                              },
+                              onDelete: () {
+                                setState(() {
+                                  alarms.removeAt(index);
+                                  _deleteIndex = null;
+                                });
+                                // Cancel any scheduled notification for this alarm here.
+                              },
+                            ),
+                          );
+                        }).toList(),
 
-                      // Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Add button
-                          GestureDetector(
-                            onTap: () {
+                        const SizedBox(height: 10),
+
+                        // Add button
+                        GestureDetector(
+                          onTap: () async {
+                            setState(() => _deleteIndex = null);
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const EditAlarm(isNew: true),
+                              ),
+                            );
+
+                            if (result != null && mounted) {
                               setState(() {
-                                alarms.add('08:00');
-                                switches.add(true);
-                                alarmDays.add([
-                                  true,
-                                  true,
-                                  true,
-                                  true,
-                                  true,
-                                  false,
-                                  false,
-                                ]);
+                                alarms.add({
+                                  'time': result['time'],
+                                  'days': result['days'],
+                                  'enabled': true,
+                                });
                               });
-                            },
+
+                              await scheduleAlarm(
+                                id: alarms.length,
+                                time: result['time'],
+                                days: result['days'],
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: 320,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                opacity: 0.5,
+                                image: AssetImage(
+                                  'assets/images/alarmCard.png',
+                                ),
+                                fit: BoxFit.fill,
+                              ),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 8,
+                                  offset: Offset(2, 4),
+                                ),
+                              ],
+                            ),
                             child: SizedBox(
                               width: 80,
                               height: 80,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    Pixel.circle,
-                                    size: 80,
-                                    color: Colors.white,
-                                  ),
-                                  Icon(
-                                    Pixel.plus,
-                                    size: 32,
-                                    color: Colors.white,
-                                  ),
-                                ],
+                              child: Center(
+                                child: Icon(
+                                  Pixel.plus,
+                                  size: 80,
+                                  color: Color(0xFFE997EE).withAlpha(130),
+                                ),
                               ),
                             ),
                           ),
+                        ),
 
-                          const SizedBox(width: 10),
-
-                          // Remove button
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (alarms.isNotEmpty) {
-                                  alarms.removeLast();
-                                  switches.removeLast();
-                                  alarmDays.removeLast();
-                                }
-                              });
-                            },
-                            child: SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    Pixel.circle,
-                                    size: 80,
-                                    color: Colors.white,
-                                  ),
-                                  Icon(
-                                    Pixel.minus,
-                                    size: 32,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 50),
-                    ],
+                        const SizedBox(height: 50),
+                      ],
+                    ),
                   ),
                 ),
               ),
