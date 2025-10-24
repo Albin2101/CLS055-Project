@@ -56,6 +56,7 @@ class _UserState extends State<User> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 8),
                   // show decorative user card populated from Firestore
