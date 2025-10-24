@@ -27,7 +27,7 @@ class _AppArViewState extends State<AppArView> {
   List<ARAnchor> allAnchors = [];
   bool hasSpawnedObject = false;
   bool showSuccess = false;
-  int health = 5;
+  int health = 50;
 
   List<String> healthBars = [
     "assets/images/healthbar/empty_health_bar.png",
@@ -41,7 +41,6 @@ class _AppArViewState extends State<AppArView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AR View')),
       body: Stack(
         children: [
           ARView(
@@ -50,39 +49,35 @@ class _AppArViewState extends State<AppArView> {
           ),
           // Health bar at top center
           Positioned(
-            top: 20,
+            top: MediaQuery.of(context).size.height * 0.05,
             left: 20,
             right: 20,
             child: Center(
-              child: Image.asset(
-                healthBars[health],
-                width: 500,
-                height: 60,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-          // Centered button at bottom
-          Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  hit();
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 48,
-                    vertical: 16,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    healthBars[(health / 10).ceil()],
+                    width: 500,
+                    height: 60,
+                    fit: BoxFit.contain,
                   ),
-                  textStyle: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    'Health: $health',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 4.0,
+                          color: Colors.black,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                child: const Text('HIT!'),
+                ],
               ),
             ),
           ),
@@ -136,7 +131,7 @@ class _AppArViewState extends State<AppArView> {
     );
   }
 
-  hit() {
+  void hit() {
     setState(() {
       health -= 1;
       if (health < 0) {
@@ -146,7 +141,6 @@ class _AppArViewState extends State<AppArView> {
         showSuccess = true;
       }
     });
-    print("Health reduced to: $health");
   }
 
   Future<void> removeAllObjects() async {
@@ -206,13 +200,19 @@ class _AppArViewState extends State<AppArView> {
       handlePans: true,
       showPlanes: true,
       showWorldOrigin: false,
-      handleTaps: false,
+      handleTaps: true,
       showAnimatedGuide: true,
     );
 
     objectManager!.onInitialize();
 
     sessionManager!.onPlaneDetected = onPlaneDetectedSpawnObject;
+
+    objectManager!.onNodeTap = (tappedNodes) async {
+      if (tappedNodes.isNotEmpty) {
+        hit();
+      }
+    };
 
     objectManager!.onPanStart = duringOnPanStart;
     objectManager!.onPanChange = duringOnPanChange;
@@ -273,7 +273,7 @@ class _AppArViewState extends State<AppArView> {
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri: Models.supabaseBumling,
-        scale: vm.Vector3(0.7, 0.7, 0.7),
+        scale: vm.Vector3(0.02, 0.02, 0.02),
         position: vm.Vector3.zero(), // Position relative to anchor
         rotation: vm.Vector4(
           1.0,
@@ -290,17 +290,15 @@ class _AppArViewState extends State<AppArView> {
 
       if (didAddNode == true) {
         allObjects.add(newNode);
-        debugPrint("✅ Model placed automatically at fixed position");
-
         // Hide plane visualization after successful spawn
         // Re-initialize session with planes hidden
         sessionManager!.onInitialize(
           showFeaturePoints: false,
           handlePans: true,
-          showPlanes: false, // Hide planes after spawning
+          showPlanes: false,
           showWorldOrigin: false,
-          handleTaps: false,
-          showAnimatedGuide: false, // Hide hand animation after spawning
+          handleTaps: true,
+          showAnimatedGuide: false,
         );
         debugPrint("🛑 Plane visualization hidden");
         debugPrint("🛑 Hand animation hidden");
