@@ -85,8 +85,7 @@ class LeaderboardCard extends StatelessWidget {
   Widget _buildCard(BuildContext context, List<Map<String, Object>> players) {
     return Container(
       width: double.infinity,
-      // height sized to show ~6 items comfortably
-      constraints: const BoxConstraints(minHeight: 321, maxHeight: 321),
+      constraints: const BoxConstraints(minHeight: 320, maxHeight: 320),
       decoration: BoxDecoration(
         image: const DecorationImage(
           image: AssetImage('assets/images/leaderboardCard.png'),
@@ -94,37 +93,17 @@ class LeaderboardCard extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // header
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Text(
-                ' Leaderboard',
-                style: const TextStyle(
-                  fontFamily: 'PressStart2P',
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
+            for (int i = 0; i < players.length; i++) 
+              _leaderboardRow(
+                i + 1, 
+                players[i]['name'] as String, 
+                players[i]['points'] as int
               ),
-            ),
-            const SizedBox(height: 6),
-            Expanded(
-              child: ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: players.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 6),
-                itemBuilder: (context, index) {
-                  final p = players[index];
-                  final rank = index + 1;
-                  final name = p['name'] as String;
-                  final points = p['points'] as int;
-                  return _leaderboardRow(rank, name, points);
-                },
-              ),
-            ),
           ],
         ),
       ),
@@ -134,46 +113,44 @@ class LeaderboardCard extends StatelessWidget {
   Widget _leaderboardRow(int rank, String name, int points) {
     final rankText = rank.toString().padLeft(2, '0');
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textBaseline: TextBaseline.alphabetic,
       children: [
-        // rank
         SizedBox(
-          width: 56,
+          width: 48,
           child: Text(
             '$rankText.',
             style: const TextStyle(
               fontFamily: 'PressStart2P',
-              fontSize: 14,
+              fontSize: 16,
               color: Colors.white,
             ),
           ),
         ),
-
-        // name
         Expanded(
           child: Text(
             name,
             style: const TextStyle(
               fontFamily: 'PressStart2P',
-              fontSize: 14,
+              fontSize: 16,
               color: Colors.white,
             ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
-
-        // points + star icon
         Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
               points.toString(),
               style: const TextStyle(
                 fontFamily: 'PressStart2P',
-                fontSize: 14,
+                fontSize: 16,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             SizedBox(
               width: 20,
               height: 20,

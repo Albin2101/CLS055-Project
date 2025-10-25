@@ -17,68 +17,63 @@ class SocialUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          children: [
-            Image.asset(
-              'assets/images/userPicture.png',
-              width: 208,
-              height: 208,
-              fit: BoxFit.cover,
-            ),
-            // place name centered near the bottom of the avatar and constrain
-            // it so long names get truncated with an ellipsis instead of overflowing
-            Positioned(
-              bottom: 8,
-              left: 8,
-              right: 8,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontFamily: 'PressStart2P',
+    return 
+      Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                  'assets/images/userPicture.png',
+                  width: 208,
+                  height: 208,
+                  fit: BoxFit.cover,
+                ),
+              Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/userCard.png'),
+                    fit: BoxFit.fill,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(2, 4),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _statIconText('assets/icons/Star.svg', points),
+                      _statIconText('assets/icons/Flame.svg', streak),
+                      _statIconText('assets/icons/Monster.svg', monsters),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            image: const DecorationImage(
-              image: AssetImage('assets/images/userCard.png'),
-              fit: BoxFit.fill,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                offset: Offset(2, 4),
-              ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _statIconText('assets/icons/Star.svg', points),
-                _statIconText('assets/icons/Flame.svg', streak),
-                _statIconText('assets/icons/Monster.svg', monsters),
-              ],
+        Positioned(
+            bottom: 49,
+            right: 7,
+            child: Text(
+                name,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'PressStart2P',
+                ),
             ),
           ),
-        ),
       ],
     );
   }
