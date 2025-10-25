@@ -106,22 +106,32 @@ class _AlarmsState extends State<Alarms> {
                               value: alarm['enabled'],
                               days: alarm['days'],
                               showDelete: _deleteIndex == index,
-                              onChanged: (val) {
+                              onChanged: (val) async {
                                 setState(() => alarms[index]['enabled'] = val);
+
+                                final alarm = alarms[index];
+                                if (val) {
+                                  await scheduleAlarm(
+                                    id: index,
+                                    time: alarm['time'],
+                                    days: alarm['days'],
+                                  );
+                                } else {
+                                  await cancelAlarm(index, alarm['days']);
+                                }
                               },
                               onTap: () => _editAlarm(index),
-                              onLongPress: () {
-                                setState(() => _deleteIndex = index);
-                              },
-                              onCancelDelete: () {
-                                setState(() => _deleteIndex = null);
-                              },
-                              onDelete: () {
+                              onLongPress: () =>
+                                  setState(() => _deleteIndex = index),
+                              onCancelDelete: () =>
+                                  setState(() => _deleteIndex = null),
+                              onDelete: () async {
+                                final alarm = alarms[index];
+                                await cancelAlarm(index, alarm['days']);
                                 setState(() {
                                   alarms.removeAt(index);
                                   _deleteIndex = null;
                                 });
-                                // Cancel any scheduled notification for this alarm here.
                               },
                             ),
                           );
@@ -190,6 +200,19 @@ class _AlarmsState extends State<Alarms> {
                           ),
                         ),
 
+                        /* ElevatedButton(
+                          onPressed: () async {
+                            await cancelAllAlarms();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('All alarms cancelled'),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text('Cancel All Alarms'),
+                        ), */
                         const SizedBox(height: 50),
                       ],
                     ),

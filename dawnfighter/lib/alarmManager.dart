@@ -31,6 +31,52 @@ String _weekdayName(int i) {
   return names[i];
 }
 
+// Print all pending and verify their times
+Future<void> printSchedule() async {
+  final pending = await flutterLocalNotificationsPlugin
+      .pendingNotificationRequests();
+  debugPrint('\nCurrently scheduled notifications:');
+  for (var p in pending) {
+    debugPrint('- ID: ${p.id}, Title: ${p.title}, Body: ${p.body}');
+  }
+  debugPrint('Total pending notifications: ${pending.length}\n');
+}
+
+Future<void> cancelAllAlarms() async {
+  await flutterLocalNotificationsPlugin.cancelAll();
+  print('All scheduled alarms cancelled.');
+  await printSchedule();
+}
+
+Future<void> cancelAlarm(int id, List<bool> days) async {
+  try {
+    final plugin = flutterLocalNotificationsPlugin;
+
+    // If no repeating days, just cancel the main alarm
+    if (!days.contains(true)) {
+      await plugin.cancel(id);
+      debugPrint('Canceled one-time alarm (id=$id)');
+      await printSchedule();
+    } else {
+      // Cancel all weekly repeats (id*10 + weekdayIndex)
+      for (int i = 0; i < 7; i++) {
+        if (days[i]) {
+          await plugin.cancel(id * 10 + i);
+          debugPrint(
+            'Canceled weekly alarm for day index $i (id=${id * 10 + i})',
+          );
+          await printSchedule();
+        }
+      }
+    }
+
+    final pending = await plugin.pendingNotificationRequests();
+    debugPrint('Remaining pending notifications: ${pending.length}');
+  } catch (e) {
+    debugPrint('Error while canceling alarm $id: $e');
+  }
+}
+
 Future<void> _zonedScheduleWithFallback({
   required int id,
   required String title,
@@ -88,28 +134,32 @@ Future<void> scheduleAlarm({
 }) async {
   debugPrint('Scheduling alarm for local time: ${time.toString()}');
 
+  if (await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestFullScreenIntentPermission() ==
+      false) {
+    debugPrint('Full-screen intent permission denied.');
+  }
+
   const androidDetails = AndroidNotificationDetails(
     'alarm_channel_id',
     'Alarms',
     channelDescription: 'Alarm notifications',
     importance: Importance.max,
-    priority: Priority.high,
+    priority: Priority.max,
     fullScreenIntent: true,
     playSound: true,
     enableVibration: true,
     category: AndroidNotificationCategory.alarm,
     visibility: NotificationVisibility.public,
+    actions: [
+      AndroidNotificationAction('id_1', 'Turn off', showsUserInterface: true),
+    ],
   );
 
   final notificationDetails = NotificationDetails(android: androidDetails);
-
-  // Immediate notification
-  await flutterLocalNotificationsPlugin.show(
-    998,
-    'Immediate Test',
-    'This is a test notification to confirm notifications work.',
-    notificationDetails,
-  );
 
   if (!days.contains(true)) {
     final scheduledTime = _nextInstance(time);
@@ -127,6 +177,7 @@ Future<void> scheduleAlarm({
       body: 'Time to wake up!',
       scheduledDate: scheduledTime,
       details: notificationDetails,
+      payload: 'open_ar',
     );
   } else {
     for (int i = 0; i < 7; i++) {
@@ -139,18 +190,11 @@ Future<void> scheduleAlarm({
           scheduledDate: next,
           details: notificationDetails,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-          payload: 'alarm:${id}_$i',
+          payload: 'open_ar',
         );
       }
     }
   }
 
-  // Print all pending and verify their times
-  final pending = await flutterLocalNotificationsPlugin
-      .pendingNotificationRequests();
-  debugPrint('\nCurrently scheduled notifications:');
-  for (var p in pending) {
-    debugPrint('- ID: ${p.id}, Title: ${p.title}, Body: ${p.body}');
-  }
-  debugPrint('Total pending notifications: ${pending.length}\n');
+  await printSchedule();
 }

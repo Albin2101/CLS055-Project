@@ -14,6 +14,9 @@ import 'screens/ar_view.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+// Add a global navigator key
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -47,10 +50,29 @@ Future<void> main() async {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ),
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      debugPrint('Notification tapped: ${response.payload}');
-      runApp(const AppArView());
+      // Navigate to AR view when notification payload indicates so
+      final payload = response.payload;
+      if (payload == 'open_ar') {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const AppArView()),
+        );
+      }
     },
   );
+
+  // If the app was launched by tapping a notification, open AR view
+  final details = await flutterLocalNotificationsPlugin
+      .getNotificationAppLaunchDetails();
+  if (details?.didNotificationLaunchApp ?? false) {
+    final payload = details?.notificationResponse?.payload;
+    if (payload == 'open_ar') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const AppArView()),
+        );
+      });
+    }
+  }
 
   // Request notification permission
   await requestNotificationPermission();
@@ -94,6 +116,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey, // <-- set the navigatorKey here
       debugShowCheckedModeBanner: false,
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
