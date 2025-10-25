@@ -17,55 +17,63 @@ class SocialUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          children: [
-            Image.asset(
-              'assets/images/userPicture.png',
-              width: 208,
-              height: 208,
-              fit: BoxFit.cover,
-            ),
-            Positioned(
-              bottom: -10,
-              right: 0,
-              child: Text(
-                name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontFamily: 'PressStart2P',
+    return 
+      Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                  'assets/images/userPicture.png',
+                  width: 208,
+                  height: 208,
+                  fit: BoxFit.cover,
+                ),
+              Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/userCard.png'),
+                    fit: BoxFit.fill,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(2, 4),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _statIconText('assets/icons/Star.svg', points),
+                      _statIconText('assets/icons/Flame.svg', streak),
+                      _statIconText('assets/icons/Monster.svg', monsters),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            image: const DecorationImage(
-              image: AssetImage('assets/images/userCard.png'),
-              fit: BoxFit.fill,
-            ),
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(2, 4)),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _statIconText('assets/icons/Star.svg', points),
-                _statIconText('assets/icons/Flame.svg', streak),
-                _statIconText('assets/icons/Monster.svg', monsters),
-              ],
+        Positioned(
+            bottom: 49,
+            right: 7,
+            child: Text(
+                name,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'PressStart2P',
+                ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -78,7 +86,10 @@ class SocialUserCard extends StatelessWidget {
         height: 28,
         child: SvgPicture.asset(
           assetPath,
-          colorFilter: const ColorFilter.mode(Color(0xFF1C1B45), BlendMode.srcIn), 
+          colorFilter: const ColorFilter.mode(
+            Color(0xFF1C1B45),
+            BlendMode.srcIn,
+          ),
           fit: BoxFit.contain,
         ),
       ),
@@ -86,12 +97,11 @@ class SocialUserCard extends StatelessWidget {
       Text(
         value.toString(),
         style: const TextStyle(
-          fontFamily: 'PressStart2P', 
-          fontSize: 16, 
-          color: Colors.white),
+          fontFamily: 'PressStart2P',
+          fontSize: 16,
+          color: Colors.white,
+        ),
       ),
     ],
   );
 }
-
-

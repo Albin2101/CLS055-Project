@@ -66,7 +66,7 @@ class _AlarmsState extends State<Alarms> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Padding(
-              padding: EdgeInsets.only(top: 70, bottom: 10),
+              padding: EdgeInsets.only(top: 70),
               child: Text(
                 'YOUR\nALARMS',
                 textAlign: TextAlign.center,
@@ -87,7 +87,7 @@ class _AlarmsState extends State<Alarms> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 50,
+                      vertical: 42,
                     ),
                     child: Column(
                       children: [
