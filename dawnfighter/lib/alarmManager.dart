@@ -152,13 +152,14 @@ Future<void> scheduleAlarm({
   }
 
   const androidDetails = AndroidNotificationDetails(
-    'alarm_channel_id',
+    'alarm_channel_id2',
     'Alarms',
     channelDescription: 'Alarm notifications',
     importance: Importance.max,
     priority: Priority.max,
     fullScreenIntent: true,
     playSound: true,
+    sound: RawResourceAndroidNotificationSound('test'),
     enableVibration: true,
     category: AndroidNotificationCategory.alarm,
     visibility: NotificationVisibility.public,
