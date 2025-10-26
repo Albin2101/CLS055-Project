@@ -18,19 +18,38 @@ class _AlarmsState extends State<Alarms> {
 
   List<Map<String, dynamic>> alarms = [
     {
-      'time': DateTime.parse('2025-10-24 20:00:04Z'),
-      'days': [false, false, false, false, true, true, false],
+      'id': 1001,
+      'time': DateTime.parse('2025-10-24 07:30:04Z'),
+      'days': [true, true, false, true, true, false, false],
       'enabled': true,
     },
     {
-      'time': DateTime.now(),
+      'id': 1002,
+      'time': DateTime.now().add(const Duration(minutes: 1)),
       'days': [false, false, false, false, false, false, false],
       'enabled': true,
     },
   ];
 
+  Future<void> _updateAlarm(int index, DateTime time, List<bool> days) async {
+    final old = alarms[index];
+
+    // Cancel all previous schedules (for previous days)
+    await cancelAlarm(old['id'], old['days']);
+
+    // Update local data
+    setState(() {
+      alarms[index]['time'] = time;
+      alarms[index]['days'] = List<bool>.from(days);
+    });
+
+    // Reschedule only if still enabled
+    if (alarms[index]['enabled'] == true) {
+      await scheduleAlarm(id: alarms[index]['id'], time: time, days: days);
+    }
+  }
+
   Future<void> _editAlarm(int index) async {
-    // clear delete-mode before editing
     setState(() => _deleteIndex = null);
 
     final alarm = alarms[index];
@@ -43,13 +62,49 @@ class _AlarmsState extends State<Alarms> {
     );
 
     if (result != null && mounted) {
-      setState(() {
-        alarms[index]['time'] = result['time'];
-        alarms[index]['days'] = result['days'];
-      });
+      await _updateAlarm(index, result['time'], result['days']);
+    }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    _rescheduleExistingAlarms();
+  }
+
+  Future<void> _rescheduleExistingAlarms() async {
+    await cancelAllAlarms();
+    for (int i = 0; i < alarms.length; i++) {
+      final alarm = alarms[i];
+      if (alarm['enabled'] == true) {
+        await scheduleAlarm(
+          id: alarm['id'],
+          time: alarm['time'],
+          days: alarm['days'],
+        );
+      }
+    }
+    debugPrint('All enabled alarms scheduled on load.');
+  }
+
+  void _addAlarm() async {
+    final newId = DateTime.now().millisecondsSinceEpoch;
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditAlarm(isNew: true)),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        alarms.add({
+          'id': newId,
+          'time': result['time'],
+          'days': result['days'],
+          'enabled': true,
+        });
+      });
       await scheduleAlarm(
-        id: index,
+        id: newId,
         time: result['time'],
         days: result['days'],
       );
@@ -111,15 +166,17 @@ class _AlarmsState extends State<Alarms> {
 
                                 final alarm = alarms[index];
                                 if (val) {
+                                  await cancelAlarm(alarm['id'], alarm['days']);
                                   await scheduleAlarm(
-                                    id: index,
+                                    id: alarm['id'],
                                     time: alarm['time'],
                                     days: alarm['days'],
                                   );
                                 } else {
-                                  await cancelAlarm(index, alarm['days']);
+                                  await cancelAlarm(alarm['id'], alarm['days']);
                                 }
                               },
+
                               onTap: () => _editAlarm(index),
                               onLongPress: () =>
                                   setState(() => _deleteIndex = index),
@@ -127,7 +184,7 @@ class _AlarmsState extends State<Alarms> {
                                   setState(() => _deleteIndex = null),
                               onDelete: () async {
                                 final alarm = alarms[index];
-                                await cancelAlarm(index, alarm['days']);
+                                await cancelAlarm(alarm['id'], alarm['days']);
                                 setState(() {
                                   alarms.removeAt(index);
                                   _deleteIndex = null;
@@ -142,30 +199,7 @@ class _AlarmsState extends State<Alarms> {
                         // Add button
                         GestureDetector(
                           onTap: () async {
-                            setState(() => _deleteIndex = null);
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const EditAlarm(isNew: true),
-                              ),
-                            );
-
-                            if (result != null && mounted) {
-                              setState(() {
-                                alarms.add({
-                                  'time': result['time'],
-                                  'days': result['days'],
-                                  'enabled': true,
-                                });
-                              });
-
-                              await scheduleAlarm(
-                                id: alarms.length,
-                                time: result['time'],
-                                days: result['days'],
-                              );
-                            }
+                            _addAlarm();
                           },
                           child: Container(
                             width: 320,

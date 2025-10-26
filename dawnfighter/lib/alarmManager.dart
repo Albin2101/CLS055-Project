@@ -14,9 +14,17 @@ tz.TZDateTime _nextInstance(DateTime time) {
   return scheduled;
 }
 
-tz.TZDateTime _nextWeekday(DateTime baseTime, int targetIndex) {
-  final now = DateTime.now();
-  int diff = (targetIndex + 1 - now.weekday) % 7;
+tz.TZDateTime _nextWeekday(DateTime baseTime, int dayIndex) {
+  final now = tz.TZDateTime.now(tz.local);
+  final targetWeekday = dayIndex + 1; // Monday=1, Sunday=7
+
+  int diff = (targetWeekday - now.weekday) % 7;
+  if (diff == 0 &&
+      (baseTime.hour < now.hour ||
+          (baseTime.hour == now.hour && baseTime.minute <= now.minute))) {
+    diff = 7; // today has passed → move to next week
+  }
+
   return tz.TZDateTime.local(
     now.year,
     now.month,

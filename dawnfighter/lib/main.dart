@@ -8,6 +8,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'screens/homescreen.dart';
 import 'firebase_options.dart';
+import 'alarmManager.dart';
 import 'screens/loginscreen.dart';
 import 'screens/ar_view.dart';
 
@@ -73,6 +74,8 @@ Future<void> main() async {
       });
     }
   }
+  //await cancelAllAlarms();
+  await printSchedule();
 
   // Request notification permission
   await requestNotificationPermission();
@@ -116,7 +119,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey, // <-- set the navigatorKey here
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
