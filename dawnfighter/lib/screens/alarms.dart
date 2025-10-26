@@ -31,6 +31,12 @@ class _AlarmsState extends State<Alarms> {
     },
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _rescheduleExistingAlarms();
+  }
+
   Future<void> _updateAlarm(int index, DateTime time, List<bool> days) async {
     final old = alarms[index];
 
@@ -66,12 +72,6 @@ class _AlarmsState extends State<Alarms> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _rescheduleExistingAlarms();
-  }
-
   Future<void> _rescheduleExistingAlarms() async {
     await cancelAllAlarms();
     for (int i = 0; i < alarms.length; i++) {
@@ -87,12 +87,16 @@ class _AlarmsState extends State<Alarms> {
     debugPrint('All enabled alarms scheduled on load.');
   }
 
+  int _nextAlarmId = 1003;
+
   void _addAlarm() async {
-    final newId = DateTime.now().millisecondsSinceEpoch;
+    final newId = _nextAlarmId++;
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const EditAlarm(isNew: true)),
     );
+
+    debugPrint('AddAlarm result: $result');
 
     if (result != null && mounted) {
       setState(() {
@@ -108,6 +112,8 @@ class _AlarmsState extends State<Alarms> {
         time: result['time'],
         days: result['days'],
       );
+    } else {
+      debugPrint('AddAlarm cancelled or no result.');
     }
   }
 

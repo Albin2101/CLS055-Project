@@ -172,8 +172,7 @@ class _EditAlarmState extends State<EditAlarm> {
                         shape: RoundedRectangleBorder(),
                       ),
                       onPressed: () {
-                        // Cancel -> return null so parent does not apply changes
-                        Navigator.pop(context);
+                        Navigator.pop(context, null);
                       },
                       child: const Text(
                         'Cancel',
