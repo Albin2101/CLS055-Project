@@ -12,7 +12,9 @@ import 'package:vector_math/vector_math_64.dart' as vm;
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:light/light.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../models.dart';
+import '../widgets/successCard.dart';
 
 class AppArView extends StatefulWidget {
   const AppArView({super.key});
@@ -38,6 +40,9 @@ class _AppArViewState extends State<AppArView> {
   Light? _light;
   StreamSubscription? _lightSubscription;
   double DARK_THRESHOLD = 40.0;
+
+  // Audio player
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   List<String> healthBars = [
     "assets/images/healthbar/empty_health_bar.png",
@@ -118,45 +123,10 @@ class _AppArViewState extends State<AppArView> {
           // Success overlay
           if (showSuccess)
             Positioned.fill(
-              child: Container(
-                color: Colors.black.withOpacity(0.8),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 100,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Successfully Slayed\nthe Monster!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                        ),
-                        child: const Text(
-                          'Return to Menu',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ],
-                  ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [SuccessCard()],
                 ),
               ),
             ),
@@ -188,6 +158,24 @@ class _AppArViewState extends State<AppArView> {
   void initState() {
     super.initState();
     _initializeLightSensor();
+    _playBackgroundMusic();
+  }
+
+  Future<void> _playBackgroundMusic() async {
+    try {
+      // For assets: place your MP3 file in assets/audio/background.mp3
+      await _audioPlayer.play(AssetSource('audio/boss_battle_music.mp3'));
+
+      // Set to loop the audio
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+
+      // Optional: Set volume (0.0 to 1.0)
+      await _audioPlayer.setVolume(0.5);
+
+      developer.log("🎵 Background music started", name: 'AudioPlayer');
+    } catch (e) {
+      developer.log("❌ Failed to play audio: $e", name: 'AudioPlayer');
+    }
   }
 
   Future<void> _initializeLightSensor() async {
@@ -254,6 +242,8 @@ class _AppArViewState extends State<AppArView> {
   @override
   void dispose() {
     _lightSubscription?.cancel();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
     sessionManager?.dispose();
     super.dispose();
   }

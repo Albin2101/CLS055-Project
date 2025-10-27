@@ -36,4 +36,9 @@ class FirestoreService {
   static Stream<DocumentSnapshot<Map<String, dynamic>>> userStream(String uid) {
     return _db.collection('users').doc(uid).snapshots();
   }
+
+  /// Update points for a user
+  static Future<void> updateUserPoints(String userId, int newPoints) async {
+    await _db.collection('users').doc(userId).update({'points': newPoints});
+  }
 }
