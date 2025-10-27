@@ -32,7 +32,6 @@ class _AppArViewState extends State<AppArView> {
   bool showSuccess = false;
   bool tooDark = false;
   bool foundPlane = false;
-  bool isFindingPlane = true;
   int health = 50;
 
   // Light sensor
@@ -58,22 +57,6 @@ class _AppArViewState extends State<AppArView> {
             planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
             onARViewCreated: createARView,
           ),
-          // Health bar at top center
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.05,
-            left: 20,
-            right: 20,
-            child: Center(
-              child: Container(
-                child: Image.asset(
-                  healthBars[(health / 10).ceil()],
-                  width: 500,
-                  height: 60,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          ),
           // Too dark overlay
           if (tooDark)
             Positioned(
@@ -88,6 +71,50 @@ class _AppArViewState extends State<AppArView> {
                 ),
               ),
             ),
+          if (!tooDark && !foundPlane && !hasSpawnedObject)
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.7,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/lookaround.png',
+                  width: 300,
+                  height: 300,
+                ),
+              ),
+            ),
+          if (!tooDark && foundPlane && hasSpawnedObject) ...[
+            // Health bar at top center
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.05,
+              left: 20,
+              right: 20,
+              child: Center(
+                child: Container(
+                  child: Image.asset(
+                    healthBars[(health / 10).ceil()],
+                    width: 500,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+            // Bumling appeared overlay
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.7,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/bumlingappeared.png',
+                  width: 300,
+                  height: 300,
+                ),
+              ),
+            ),
+          ],
           // Success overlay
           if (showSuccess)
             Positioned.fill(
@@ -265,7 +292,9 @@ class _AppArViewState extends State<AppArView> {
     if (hasSpawnedObject || planeCount == 0) {
       return; // Already spawned or no planes yet
     }
-
+    setState(() {
+      foundPlane = true;
+    });
     debugPrint("🎯 Plane detected: $planeCount - attempting to spawn object");
 
     // Get the current camera pose to place object relative to view
@@ -274,8 +303,6 @@ class _AppArViewState extends State<AppArView> {
       debugPrint("⚠️ Camera pose not available yet");
       return;
     }
-
-    hasSpawnedObject = true;
 
     // Extract position from camera pose but create upright orientation
     var cameraPosition = cameraPose.getTranslation();
@@ -327,6 +354,9 @@ class _AppArViewState extends State<AppArView> {
       );
 
       if (didAddNode == true) {
+        setState(() {
+          hasSpawnedObject = true;
+        });
         allObjects.add(newNode);
         // Hide plane visualization after successful spawn
         // Re-initialize session with planes hidden
