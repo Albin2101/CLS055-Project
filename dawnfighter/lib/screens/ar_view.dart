@@ -9,6 +9,9 @@ import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
+import 'dart:async';
+import 'dart:developer' as developer;
+import 'package:light/light.dart';
 import '../models.dart';
 
 class AppArView extends StatefulWidget {
@@ -27,7 +30,15 @@ class _AppArViewState extends State<AppArView> {
   List<ARAnchor> allAnchors = [];
   bool hasSpawnedObject = false;
   bool showSuccess = false;
+  bool tooDark = false;
+  bool foundPlane = false;
+  bool isFindingPlane = true;
   int health = 50;
+
+  // Light sensor
+  Light? _light;
+  StreamSubscription? _lightSubscription;
+  double DARK_THRESHOLD = 40.0;
 
   List<String> healthBars = [
     "assets/images/healthbar/empty_health_bar.png",
@@ -63,6 +74,20 @@ class _AppArViewState extends State<AppArView> {
               ),
             ),
           ),
+          // Too dark overlay
+          if (tooDark)
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.7,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/light.png',
+                  width: 300,
+                  height: 300,
+                ),
+              ),
+            ),
           // Success overlay
           if (showSuccess)
             Positioned.fill(
@@ -132,39 +157,33 @@ class _AppArViewState extends State<AppArView> {
     allAnchors = [];
   }
 
-  void dispose() {
-    super.dispose();
-    sessionManager!.dispose();
+  @override
+  void initState() {
+    super.initState();
+    _initializeLightSensor();
   }
 
-  void duringOnPanStart(String objectNodeName) {
-    print("Started panning on $objectNodeName");
-  }
+  Future<void> _initializeLightSensor() async {
+    try {
+      _light = Light();
 
-  void duringOnPanChange(String objectNodeName) {
-    print("Panning on $objectNodeName");
-  }
-
-  void duringOnPanEnd(String objectNodeName, Matrix4 transformMatrix4) {
-    print("Ended panning on $objectNodeName");
-    final panNode = allObjects.firstWhere(
-      (object) => object.name == objectNodeName,
-    );
-  }
-
-  void duringOnRotationStart(String objectNodeName) {
-    print("Started rotating on $objectNodeName");
-  }
-
-  void duringOnRotationChange(String objectNodeName) {
-    print("Rotating on $objectNodeName");
-  }
-
-  void duringOnRotationEnd(String objectNodeName, Matrix4 transformMatrix4) {
-    print("Ended rotating on $objectNodeName");
-    final rotationNode = allObjects.firstWhere(
-      (object) => object.name == objectNodeName,
-    );
+      // Start listening to light sensor changes
+      _lightSubscription = _light!.lightSensorStream.listen(
+        (int luxValue) {
+          setState(() {
+            tooDark = luxValue < DARK_THRESHOLD;
+          });
+        },
+        onError: (error) {
+          developer.log("❌ Light sensor error: $error", name: 'LightSensor');
+        },
+      );
+    } catch (e) {
+      developer.log(
+        "❌ Failed to initialize light sensor: $e",
+        name: 'LightSensor',
+      );
+    }
   }
 
   void createARView(
@@ -203,6 +222,43 @@ class _AppArViewState extends State<AppArView> {
     objectManager!.onRotationStart = duringOnRotationStart;
     objectManager!.onRotationChange = duringOnRotationChange;
     objectManager!.onRotationEnd = duringOnRotationEnd;
+  }
+
+  @override
+  void dispose() {
+    _lightSubscription?.cancel();
+    sessionManager?.dispose();
+    super.dispose();
+  }
+
+  void duringOnPanStart(String objectNodeName) {
+    print("Started panning on $objectNodeName");
+  }
+
+  void duringOnPanChange(String objectNodeName) {
+    print("Panning on $objectNodeName");
+  }
+
+  void duringOnPanEnd(String objectNodeName, Matrix4 transformMatrix4) {
+    print("Ended panning on $objectNodeName");
+    final panNode = allObjects.firstWhere(
+      (object) => object.name == objectNodeName,
+    );
+  }
+
+  void duringOnRotationStart(String objectNodeName) {
+    print("Started rotating on $objectNodeName");
+  }
+
+  void duringOnRotationChange(String objectNodeName) {
+    print("Rotating on $objectNodeName");
+  }
+
+  void duringOnRotationEnd(String objectNodeName, Matrix4 transformMatrix4) {
+    print("Ended rotating on $objectNodeName");
+    final rotationNode = allObjects.firstWhere(
+      (object) => object.name == objectNodeName,
+    );
   }
 
   void onPlaneDetectedSpawnObject(int planeCount) async {
