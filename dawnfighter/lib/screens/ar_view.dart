@@ -39,7 +39,7 @@ class _AppArViewState extends State<AppArView> {
   // Light sensor
   Light? _light;
   StreamSubscription? _lightSubscription;
-  double DARK_THRESHOLD = 40.0;
+  double DARK_THRESHOLD = 10.0;
 
   // Audio player
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -89,7 +89,7 @@ class _AppArViewState extends State<AppArView> {
                 ),
               ),
             ),
-          if (!tooDark && foundPlane && hasSpawnedObject) ...[
+          if (!tooDark && foundPlane && hasSpawnedObject && !showSuccess) ...[
             // Health bar at top center
             Positioned(
               top: MediaQuery.of(context).size.height * 0.05,
