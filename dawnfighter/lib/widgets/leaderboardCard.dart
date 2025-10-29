@@ -85,7 +85,7 @@ class LeaderboardCard extends StatelessWidget {
   Widget _buildCard(BuildContext context, List<Map<String, Object>> players) {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(minHeight: 320, maxHeight: 320),
+      constraints: const BoxConstraints(minHeight: 320, maxHeight: 400),
       decoration: BoxDecoration(
         image: const DecorationImage(
           image: AssetImage('assets/images/leaderboardCard.png'),
@@ -122,7 +122,7 @@ class LeaderboardCard extends StatelessWidget {
             '$rankText.',
             style: const TextStyle(
               fontFamily: 'PressStart2P',
-              fontSize: 16,
+              fontSize: 12,
               color: Colors.white,
             ),
           ),
@@ -132,7 +132,7 @@ class LeaderboardCard extends StatelessWidget {
             name,
             style: const TextStyle(
               fontFamily: 'PressStart2P',
-              fontSize: 16,
+              fontSize: 12,
               color: Colors.white,
             ),
             overflow: TextOverflow.ellipsis,
@@ -146,7 +146,7 @@ class LeaderboardCard extends StatelessWidget {
               points.toString(),
               style: const TextStyle(
                 fontFamily: 'PressStart2P',
-                fontSize: 16,
+                fontSize: 12,
                 color: Colors.white,
               ),
             ),

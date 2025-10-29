@@ -136,7 +136,7 @@ class SuccessCard extends StatelessWidget {
                   },
                   child: Image.asset(
                     'assets/images/successContinue.png',
-                    height: 48,
+                    height: 56,
                   ),
                   ),
                 ],

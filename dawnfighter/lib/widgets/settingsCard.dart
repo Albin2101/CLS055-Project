@@ -1,3 +1,4 @@
+import 'package:dawnfighter/screens/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
@@ -141,6 +142,12 @@ class _SettingsCardState extends State<SettingsCard> {
                   if (label.toLowerCase() == 'edit account') {
                     _startEdit();
                   }
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => const LoginTestScreen(),
+                      ),
+                    );
                 },
         );
       }).toList(),

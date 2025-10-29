@@ -34,15 +34,6 @@ class _HomescreenState extends State<Homescreen> {
           // Screens
           IndexedStack(index: selectedIndex, children: pages),
 
-          // Top AR button
-          Positioned(
-            top: 20, // adjust as needed (20 px from top)
-            right: 16, // adjust horizontal position
-            child: SafeArea(
-              child: ARviewButton(context),
-            ),
-          ),
-
           // Bottom navigation bar
           Align(
             alignment: Alignment.bottomCenter,

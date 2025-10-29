@@ -164,7 +164,7 @@ class _LoginCardState extends State<LoginCard> {
                         'Log in',
                         style: TextStyle(
                           fontFamily: 'PressStart2P',
-                          fontSize: 14,
+                          fontSize: 12,
                           color: Colors.white,
                         ),
                       ),
