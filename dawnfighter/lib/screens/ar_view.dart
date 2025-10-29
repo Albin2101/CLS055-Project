@@ -65,7 +65,7 @@ class _AppArViewState extends State<AppArView> {
           // Too dark overlay
           if (tooDark)
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.7,
+              top: MediaQuery.of(context).size.height * 0.6,
               left: 0,
               right: 0,
               child: Center(
@@ -78,7 +78,7 @@ class _AppArViewState extends State<AppArView> {
             ),
           if (!tooDark && !foundPlane && !hasSpawnedObject)
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.7,
+              top: MediaQuery.of(context).size.height * 0.6,
               left: 0,
               right: 0,
               child: Center(
@@ -108,7 +108,7 @@ class _AppArViewState extends State<AppArView> {
             ),
             // Bumling appeared overlay
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.7,
+              top: MediaQuery.of(context).size.height * 0.6,
               left: 0,
               right: 0,
               child: Center(
@@ -135,7 +135,7 @@ class _AppArViewState extends State<AppArView> {
     );
   }
 
-  void hit() {
+  Future<void> hit() async {
     setState(() {
       health -= 1;
       if (health < 0) {
@@ -143,8 +143,13 @@ class _AppArViewState extends State<AppArView> {
       }
       if (health == 0) {
         showSuccess = true;
+        
       }
     });
+    if (showSuccess) {
+      await _audioPlayer.stop();
+      await _audioPlayer.dispose();
+    }
   }
 
   Future<void> removeAllObjects() async {
@@ -163,16 +168,13 @@ class _AppArViewState extends State<AppArView> {
 
   Future<void> _playBackgroundMusic() async {
     try {
-      // For assets: place your MP3 file in assets/audio/background.mp3
       await _audioPlayer.play(AssetSource('audio/boss_battle_music.mp3'));
 
-      // Set to loop the audio
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
 
-      // Optional: Set volume (0.0 to 1.0)
       await _audioPlayer.setVolume(0.5);
+
     } catch (e) {
-      // Handle audio playback error
     }
   }
 
@@ -181,13 +183,18 @@ class _AppArViewState extends State<AppArView> {
       _light = Light();
 
       // Start listening to light sensor changes
-      _lightSubscription = _light!.lightSensorStream.listen((int luxValue) {
-        setState(() {
-          tooDark = luxValue < DARK_THRESHOLD;
-        });
-      }, onError: (error) {});
+      _lightSubscription = _light!.lightSensorStream.listen(
+        (int luxValue) {
+          setState(() {
+            tooDark = luxValue < DARK_THRESHOLD;
+          });
+        },
+        onError: (error) {
+          //
+        },
+      );
     } catch (e) {
-      // Handle initialization error
+      //
     }
   }
 
@@ -230,10 +237,10 @@ class _AppArViewState extends State<AppArView> {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     _lightSubscription?.cancel();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    await _audioPlayer.stop();
+    await _audioPlayer.dispose();
     sessionManager?.dispose();
     super.dispose();
   }
