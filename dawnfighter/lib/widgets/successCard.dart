@@ -44,19 +44,16 @@ class SuccessCard extends StatelessWidget {
               // Victory row at the top
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 10,
                   vertical: 8,
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1C1B45),
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                decoration: BoxDecoration(color: const Color(0xFF1C1B45)),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SvgPicture.asset(
-                      'assets/icons/Crown.svg',
+                      'assets/icons/Star.svg',
                       width: 28,
                       height: 28,
                     ),
@@ -71,21 +68,20 @@ class SuccessCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     SvgPicture.asset(
-                      'assets/icons/Crown.svg',
+                      'assets/icons/Star.svg',
                       width: 28,
                       height: 28,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
               // White card container
               Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
-                  border: Border.all(color: const Color(0xFF0C0B2C), width: 6),
+                  border: Border.all(color: const Color(0xFF1C1B45), width: 6),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
