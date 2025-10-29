@@ -142,12 +142,14 @@ class _SettingsCardState extends State<SettingsCard> {
                   if (label.toLowerCase() == 'edit account') {
                     _startEdit();
                   }
+                  if (label.toLowerCase() == 'log out') {
                    Navigator.push(
                       context,
                       MaterialPageRoute(
                       builder: (context) => const LoginTestScreen(),
                       ),
                     );
+                  }
                 },
         );
       }).toList(),
