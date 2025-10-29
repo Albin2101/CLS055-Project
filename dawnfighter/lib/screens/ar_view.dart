@@ -171,10 +171,8 @@ class _AppArViewState extends State<AppArView> {
 
       // Optional: Set volume (0.0 to 1.0)
       await _audioPlayer.setVolume(0.5);
-
-      developer.log("🎵 Background music started", name: 'AudioPlayer');
     } catch (e) {
-      developer.log("❌ Failed to play audio: $e", name: 'AudioPlayer');
+      // Handle audio playback error
     }
   }
 
@@ -183,21 +181,13 @@ class _AppArViewState extends State<AppArView> {
       _light = Light();
 
       // Start listening to light sensor changes
-      _lightSubscription = _light!.lightSensorStream.listen(
-        (int luxValue) {
-          setState(() {
-            tooDark = luxValue < DARK_THRESHOLD;
-          });
-        },
-        onError: (error) {
-          developer.log("❌ Light sensor error: $error", name: 'LightSensor');
-        },
-      );
+      _lightSubscription = _light!.lightSensorStream.listen((int luxValue) {
+        setState(() {
+          tooDark = luxValue < DARK_THRESHOLD;
+        });
+      }, onError: (error) {});
     } catch (e) {
-      developer.log(
-        "❌ Failed to initialize light sensor: $e",
-        name: 'LightSensor',
-      );
+      // Handle initialization error
     }
   }
 
@@ -285,12 +275,10 @@ class _AppArViewState extends State<AppArView> {
     setState(() {
       foundPlane = true;
     });
-    debugPrint("🎯 Plane detected: $planeCount - attempting to spawn object");
 
     // Get the current camera pose to place object relative to view
     var cameraPose = await sessionManager!.getCameraPose();
     if (cameraPose == null) {
-      debugPrint("⚠️ Camera pose not available yet");
       return;
     }
 
@@ -322,7 +310,6 @@ class _AppArViewState extends State<AppArView> {
 
     if (didAddAnchor == true) {
       allAnchors.add(newAnchor);
-      debugPrint("✅ Anchor created at fixed position");
 
       // Add the model to the anchor
       var newNode = ARNode(
@@ -358,14 +345,10 @@ class _AppArViewState extends State<AppArView> {
           handleTaps: true,
           showAnimatedGuide: false,
         );
-        debugPrint("🛑 Plane visualization hidden");
-        debugPrint("🛑 Hand animation hidden");
       } else {
-        sessionManager!.onError!("❌ Failed to add model to anchor");
         hasSpawnedObject = false; // Reset to try again
       }
     } else {
-      sessionManager!.onError!("❌ Failed to add anchor");
       hasSpawnedObject = false; // Reset to try again
     }
   }
