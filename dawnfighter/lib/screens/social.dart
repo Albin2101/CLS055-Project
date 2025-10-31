@@ -64,6 +64,7 @@ class _SocialState extends State<Social> {
                     );
                   }
 
+                  // parse data from firebase
                   final data = doc.data() as Map<String, dynamic>?;
                   final name = (data != null && data['name'] is String)
                       ? data['name'] as String

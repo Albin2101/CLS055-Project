@@ -23,7 +23,6 @@ class _HomescreenState extends State<Homescreen> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
               'assets/images/background.png',
@@ -31,10 +30,8 @@ class _HomescreenState extends State<Homescreen> {
             ),
           ),
 
-          // Screens
           IndexedStack(index: selectedIndex, children: pages),
 
-          // Bottom navigation bar
           Align(
             alignment: Alignment.bottomCenter,
             child: CustomNavigationBar(

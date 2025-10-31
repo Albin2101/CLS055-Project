@@ -283,20 +283,18 @@ class _AppArViewState extends State<AppArView> {
       foundPlane = true;
     });
 
-    // Get the current camera pose to place object relative to view
     var cameraPose = await sessionManager!.getCameraPose();
     if (cameraPose == null) {
       return;
     }
 
-    // Extract position from camera pose but create upright orientation
+
+    //Camera stuff etc
     var cameraPosition = cameraPose.getTranslation();
 
-    // Get camera's forward direction (Z-axis) from rotation matrix
     var cameraRotation = cameraPose.getRotation();
     var cameraForward = cameraRotation * vm.Vector3(0, 0, -1);
 
-    // Calculate position in front of camera (project onto horizontal plane)
     var horizontalForward = vm.Vector3(
       cameraForward.x,
       0,
@@ -306,30 +304,26 @@ class _AppArViewState extends State<AppArView> {
     targetPosition.y =
         cameraPosition.y - 0.3; // Place slightly below camera height
 
-    // Create transformation matrix with position only (no rotation)
-    // This keeps the object upright relative to world coordinates
     var objectTransform = Matrix4.identity();
     objectTransform.setTranslation(targetPosition);
 
-    // Create an anchor at this position
     var newAnchor = ARPlaneAnchor(transformation: objectTransform);
     bool? didAddAnchor = await anchorManager!.addAnchor(newAnchor);
 
     if (didAddAnchor == true) {
       allAnchors.add(newAnchor);
 
-      // Add the model to the anchor
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri: Models.supabaseBumling,
         scale: vm.Vector3(0.02, 0.02, 0.02),
-        position: vm.Vector3.zero(), // Position relative to anchor
+        position: vm.Vector3.zero(), 
         rotation: vm.Vector4(
           1.0,
           0.0,
           0.0,
           1.5708,
-        ), // Identity rotation - stands upright
+        ), 
       );
 
       bool? didAddNode = await objectManager!.addNode(
@@ -342,8 +336,7 @@ class _AppArViewState extends State<AppArView> {
           hasSpawnedObject = true;
         });
         allObjects.add(newNode);
-        // Hide plane visualization after successful spawn
-        // Re-initialize session with planes hidden
+
         sessionManager!.onInitialize(
           showFeaturePoints: false,
           handlePans: true,
@@ -353,10 +346,10 @@ class _AppArViewState extends State<AppArView> {
           showAnimatedGuide: false,
         );
       } else {
-        hasSpawnedObject = false; // Reset to try again
+        hasSpawnedObject = false;
       }
     } else {
-      hasSpawnedObject = false; // Reset to try again
+      hasSpawnedObject = false; 
     }
   }
 }

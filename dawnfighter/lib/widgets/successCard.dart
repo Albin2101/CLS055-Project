@@ -21,6 +21,7 @@ class SuccessCard extends StatelessWidget {
         if (snapshot.hasData && snapshot.data != null && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>?;
 
+          //har vi gjort duplicated code?
           totalPoints = (data?['points'] ?? data?['score'] ?? 0) is num
               ? (data?['points'] ?? data?['score']).toInt()
               : 0;

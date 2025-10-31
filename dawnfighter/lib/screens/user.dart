@@ -23,9 +23,7 @@ class _UserState extends State<User> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Signed out')));
       // After sign out, the StreamBuilder in main.dart will show the login screen.
-      // Do not call Navigator.pop() here — let the auth-state-driven
-      // navigation replace the screen. Calling pop can inadvertently
-      // pop the underlying route in apps that use a bottom navigation bar.
+      // Do not call Navigator.pop() here — let the auth-state-driven navigation replace the screen
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -98,6 +96,7 @@ class _UserState extends State<User> {
                         );
                       }
 
+                      //parse data,
                       final data = doc.data() as Map<String, dynamic>?;
                       final name = (data != null && data['name'] is String)
                           ? data['name'] as String

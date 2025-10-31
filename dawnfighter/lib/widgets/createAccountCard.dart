@@ -32,9 +32,6 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    // Debug log: start
-    // ignore: avoid_print
-    print('CreateAccountCard: starting _createAccount for email=$email');
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,35 +49,8 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
       );
 
       final uid = cred.user?.uid;
-      // Debug log
-      // ignore: avoid_print
-      print(
-        'CreateAccountCard: createUserWithEmailAndPassword returned cred=$cred',
-      );
-      // ignore: avoid_print
-      print(
-        'CreateAccountCard: createUserWithEmailAndPassword returned uid=$uid',
-      );
-      // ignore: avoid_print
-      print('CreateAccountCard: cred.user = ${cred.user}');
+      
       if (uid == null) throw Exception('Failed to obtain user id');
-
-      // Ensure the auth state still has this user as current. If not, abort
-      // before attempting Firestore writes (which may fail due to security rules)
-      final current = FirebaseAuth.instance.currentUser;
-      // ignore: avoid_print
-      print('CreateAccountCard: checking current auth user...');
-      // ignore: avoid_print
-      print('CreateAccountCard: current auth user uid=${current?.uid}');
-      if (current == null || current.uid != uid) {
-        // The auth state may not have fully propagated yet. Log a warning
-        // but continue — we'll still attempt the Firestore write and handle
-        // any permission errors in the write's catch block.
-        // ignore: avoid_print
-        print(
-          'CreateAccountCard: warning — auth state changed or not settled. current=${current?.uid}, expected=$uid. Proceeding to write user document.',
-        );
-      }
 
       try {
         final userData = {
@@ -91,17 +61,7 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
           // use server timestamp to avoid sending complex DateTime objects
           'createdAt': FieldValue.serverTimestamp(),
         };
-        // ignore: avoid_print
-        print(
-          'CreateAccountCard: about to call FirestoreService.setUserData for uid=$uid with data=$userData',
-        );
         await FirestoreService.setUserData(uid, userData);
-
-        // Debug log: firestore write success
-        // ignore: avoid_print
-        print(
-          'CreateAccountCard: Firestore.setUserData succeeded for uid=$uid',
-        );
 
         if (!mounted) return;
         setState(() => _isLoading = false);
@@ -110,15 +70,8 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
         ).showSnackBar(SnackBar(content: Text('Account created: $uid')));
         widget.onSuccess?.call(uid);
         return;
-      } catch (e, st) {
-        // Firestore write failed — show dialog so the user sees it
-        // Print full stack trace for debugging
-        // ignore: avoid_print
-        print(
-          'CreateAccountCard: Firestore.setUserData failed for uid=$uid: $e',
-        );
-        // ignore: avoid_print
-        print(st);
+      } catch (e) {
+        
         if (!mounted) return;
         setState(() => _isLoading = false);
         await showDialog<void>(
@@ -142,17 +95,10 @@ class _CreateAccountCardState extends State<CreateAccountCard> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.message ?? e.code)));
-    } catch (e, st) {
-      // Firestore write failed (or other non-auth error). Do NOT delete the
-      // created auth user here — keep the account so the user can sign in or
-      // retry the write. Surface the error so the developer can inspect logs.
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      // Print to console for debugging
-      // ignore: avoid_print
-      print('CreateAccountCard: failed to write user document: $e');
-      // ignore: avoid_print
-      print(st);
+      
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to save user data: $e')));

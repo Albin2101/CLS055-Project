@@ -202,7 +202,7 @@ class _AlarmsState extends State<Alarms> {
 
                         const SizedBox(height: 10),
 
-                        // Add button
+                        // Add-aarm button
                         GestureDetector(
                           onTap: () async {
                             _addAlarm();
@@ -239,20 +239,6 @@ class _AlarmsState extends State<Alarms> {
                             ),
                           ),
                         ),
-
-                        /* ElevatedButton(
-                          onPressed: () async {
-                            await cancelAllAlarms();
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('All alarms cancelled'),
-                                ),
-                              );
-                            }
-                          },
-                          child: const Text('Cancel All Alarms'),
-                        ), */
                         const SizedBox(height: 50),
                       ],
                     ),

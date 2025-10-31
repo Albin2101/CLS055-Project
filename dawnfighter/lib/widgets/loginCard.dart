@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-/// A self-contained login card matching the app's decorative asset.
 class LoginCard extends StatefulWidget {
   final double width;
   final double height;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LeaderboardCard extends StatelessWidget {
-  /// Maximum number of players to show. Pass null to show all.
+  /// Maximum number of players to show
   final int? maxItems;
 
   const LeaderboardCard({super.key, this.maxItems = 6});
@@ -23,7 +23,7 @@ class LeaderboardCard extends StatelessWidget {
 
         final docs = snapshot.data?.docs ?? [];
 
-        // Map docs to players with a canonical score value, then sort client-side
+        // Sort on client side
         final players = docs.map((d) {
           final data = d.data();
           final name = (data['name'] is String)

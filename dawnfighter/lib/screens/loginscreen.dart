@@ -105,7 +105,6 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                       ),
                     ),
 
-                    // Hint text above create account (hidden when create form visible)
                     if (!_showCreate) ...[
                       Text(
                         "Don't have an account?",
@@ -125,7 +124,6 @@ class _LoginTestScreenState extends State<LoginTestScreen> {
                       SizedBox(height: 8),
                     ],
 
-                    // Create account CTA (toggle which card is shown) — sized to content
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
